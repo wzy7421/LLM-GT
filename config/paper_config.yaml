@@ -1,0 +1,47 @@
+seed: 42
+
+embedding:
+  model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  normalize_embeddings: true
+
+umap:
+  n_neighbors: 15
+  min_dist: 0.0
+  n_components: 5
+  metric: cosine
+  random_state: 42
+
+hdbscan:
+  academic:
+    min_cluster_size: 5
+    min_samples: 5
+    metric: euclidean
+    cluster_selection_method: eom
+  public:
+    min_cluster_size: 30
+    min_samples: 10
+    metric: euclidean
+    cluster_selection_method: eom
+
+ctfidf:
+  top_n_terms: 10
+  stop_words: english
+
+llm:
+  model: gpt-4o-2024-11-20
+  temperature: 0.2
+  top_p: 0.9
+  seed: 42
+  max_tokens: 600
+  max_json_retries: 2
+  paper_repeatability_runs: 10
+  stochastic_sensitivity_seeds: [11, 23, 42, 67, 89, 101, 131, 167, 191, 223]
+
+evaluation:
+  reference_theme_count: 32
+  blind_subset_size: 103
+  academic_record_count: 412
+  external_record_count: 34500
+  academic_clusters: 12
+  academic_outliers: 33
+  public_topic_families: 8
