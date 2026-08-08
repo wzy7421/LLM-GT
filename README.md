@@ -4,7 +4,7 @@ Reproducibility companion for the manuscript **“Human-in-the-Loop Knowledge Or
 
 ## Purpose
 
-This repository provides a **schema-compatible, executable demonstration** of the computational parts of the manuscript. It is intended to make the workflow, configuration, prompt structure, evaluation logic, and figure generation inspectable without redistributing licensed academic metadata or user-generated public-discourse data.
+This repository provides a **schema-compatible, executable demonstration** of the computational and audit components described in the manuscript. It is intended to make the workflow, configuration, prompt structure, evaluation logic, stability diagnostics, scaffold-to-claim gate, and figure generation inspectable without redistributing licensed academic metadata or user-generated public-discourse data.
 
 **Important:** the files in `data/demo/` are synthetic examples created only to illustrate the data schema and execution path. They are **not** the 412-paper scholarly corpus or the 34,500-text external corpus used in the study, and they must not be used to reproduce the manuscript's empirical claims.
 
@@ -23,7 +23,7 @@ The repository mirrors the manuscript's asymmetric human–AI design:
 4. **GT–computational alignment and divergence adjudication**  
    Convergence, complementarity, and divergence are recorded as explicit human decisions.
 5. **Independent expert audit and scaffold-to-claim gate**  
-   Machine-assisted outputs remain provisional unless trace evidence, recorded adjudication, and expert confirmation are present.
+   Machine-assisted outputs remain provisional unless document-level trace evidence, recorded human adjudication, and independent expert confirmation are all present.
 6. **Optional external triangulation**  
    Public-discourse analysis is treated as a boundary-sensitivity extension, not as evidence of core workflow efficacy or population opinion.
 
@@ -39,7 +39,7 @@ The publication configuration in `config/paper_config.yaml` records the settings
 - LLM snapshot recorded in the manuscript: `gpt-4o-2024-11-20`
 - temperature: `0.2`; top_p: `0.9`; seed: `42`; max output: `600` tokens
 
-The repository also includes an **optional varying-seed stochastic-sensitivity mode**. This is provided as an extension for reviewer-facing robustness analysis and should not be described as a manuscript result unless it is actually run and the manuscript values are updated.
+The repository also records a set of **optional varying seeds** for a reviewer-facing stochastic-sensitivity extension. These seeds are not manuscript results by themselves. If this extension is run, the resulting metrics should be recomputed and the manuscript updated before they are reported.
 
 ## Repository structure
 
@@ -48,13 +48,17 @@ LLM-GT/
 ├─ config/
 │  └─ paper_config.yaml
 ├─ data/
+│  ├─ README.md
 │  ├─ demo/
 │  │  ├─ academic_demo.csv
 │  │  ├─ public_demo.csv
-│  │  └─ gt_audit_demo.csv
+│  │  ├─ gt_audit_demo.csv
+│  │  ├─ gate_demo.csv
+│  │  └─ llm_runs_demo.jsonl
 │  └─ derived/
 │     ├─ workflow_metrics.csv
-│     └─ interpretive_depth.csv
+│     ├─ interpretive_depth.csv
+│     └─ llm_stability_reported.csv
 ├─ prompts/
 │  ├─ system_prompt.txt
 │  └─ user_template.txt
@@ -62,8 +66,10 @@ LLM-GT/
 │  ├─ semantic_mapping.py
 │  ├─ llm_interpretation.py
 │  ├─ stability.py
+│  ├─ scaffold_to_claim_gate.py
 │  └─ plot_figure4.py
 ├─ requirements.txt
+├─ LICENSE
 └─ README.md
 ```
 
@@ -75,31 +81,62 @@ source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Run the semantic-mapping demonstration:
+### 1. Semantic mapping demo
 
 ```bash
-python src/semantic_mapping.py --input data/demo/academic_demo.csv --corpus academic --output outputs/academic_demo_clusters.csv
+python src/semantic_mapping.py \
+  --input data/demo/academic_demo.csv \
+  --corpus academic \
+  --output outputs/academic_demo_clusters.csv
 ```
 
-Inspect the exact LLM prompt payload without making an API call:
+The demo corpus is intentionally small, so its clusters are illustrative rather than manuscript-reproducing.
+
+### 2. Inspect the exact LLM prompt payload without making an API call
+
+The script is a dry run unless `--execute` is supplied:
 
 ```bash
-python src/llm_interpretation.py --cluster-id demo_C01 --terms "trust, shared control, handover, recoverability" --records "record A" "record B" "record C" --dry-run
+python src/llm_interpretation.py \
+  --cluster-id demo_C01 \
+  --corpus academic \
+  --terms trust shared-control handover recoverability \
+  --records "record A" "record B" "record C"
 ```
 
-If an API key is available, remove `--dry-run`. The script uses the model/configuration declared in `config/paper_config.yaml` unless overridden.
+To execute an API request, set `OPENAI_API_KEY` and add `--execute`. The script then uses the model/configuration declared in `config/paper_config.yaml` unless the seed is overridden.
 
-Run repeated-output stability analysis on saved JSONL outputs:
+A varying-seed robustness run can be produced by repeating the command with the seeds recorded under `llm.stochastic_sensitivity_seeds` in the configuration file and saving each output to a JSONL ledger.
+
+### 3. Repeated-output stability analysis
+
+A synthetic JSONL example is included:
 
 ```bash
-python src/stability.py --input outputs/llm_runs.jsonl
+python src/stability.py \
+  --input data/demo/llm_runs_demo.jsonl \
+  --output outputs/llm_stability_by_unit.csv
 ```
 
-Regenerate the revised Fig. 4 from manuscript-level aggregate results:
+The script reports label-similarity, modal agreement, Fleiss' kappa, and downstream human-decision invariance. These are stability diagnostics, not evidence that a provisional label is true.
+
+### 4. Scaffold-to-claim gate demo
+
+```bash
+python src/scaffold_to_claim_gate.py \
+  --input data/demo/gate_demo.csv \
+  --output outputs/gate_decisions.csv
+```
+
+This checker does not create or judge research gaps. It only tests whether the three manuscript-defined audit requirements have been recorded.
+
+### 5. Regenerate revised Fig. 4
 
 ```bash
 python src/plot_figure4.py --output outputs/figure4_role_aligned.png
 ```
+
+This figure uses only manuscript-level aggregate values from `data/derived/`.
 
 ## Data and claim boundaries
 
@@ -107,6 +144,7 @@ python src/plot_figure4.py --output outputs/figure4_role_aligned.png
 - `data/derived/*` = aggregate values already reported in the manuscript.
 - No licensed bibliographic record, user identifier, profile text, or verbatim public post is included.
 - The repository does not convert computational topics into research-gap claims automatically.
+- LLM outputs remain provisional until human audit requirements are met.
 - Repeated LLM output similarity indicates repeatability/stability, not truth or construct validity.
 
 ## Reproducibility note
