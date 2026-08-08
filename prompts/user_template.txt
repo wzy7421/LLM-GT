@@ -1,0 +1,7 @@
+cluster_id: {cluster_id}
+corpus: {corpus}
+top_c_tfidf_terms: {top_c_tfidf_terms}
+representative_record_1: {representative_record_1}
+representative_record_2: {representative_record_2}
+representative_record_3: {representative_record_3}
+Return JSON keys: provisional_label; two_sentence_summary; supporting_terms; alternative_label; uncertainty; prohibited_claim_check.
