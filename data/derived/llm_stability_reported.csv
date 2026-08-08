@@ -1,0 +1,4 @@
+units,outputs,cosine_mean,cosine_sd,modal_agreement,fleiss_kappa,decision_invariance_n,decision_invariance_total
+Academic clusters,120,0.93,0.03,0.95,0.89,12,12
+Public topic families,80,0.89,0.05,0.90,0.82,7,8
+Overall,200,0.91,0.04,0.93,0.86,19,20
