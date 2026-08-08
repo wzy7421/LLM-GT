@@ -1,0 +1,5 @@
+proposition_id,proposition,document_trace_evidence,recorded_human_adjudication,independent_expert_confirmation,notes
+D-G1,"Operational measures for 4E cognition",true,true,true,"Synthetic example eligible for claim status"
+D-G2,"Localized eHMI benchmark",true,true,false,"Synthetic example held as provisional because expert confirmation is absent"
+D-G3,"Autonomous-agent safety claim",false,true,true,"Synthetic example held as provisional because document-level trace evidence is absent"
+D-G4,"Transparent mobility data governance",true,false,true,"Synthetic example held as provisional because adjudication is not recorded"
