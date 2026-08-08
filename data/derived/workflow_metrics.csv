@@ -1,0 +1,5 @@
+workflow,epistemic_role,recovered,reference_total,candidates,coverage,precision,f1,recorded_person_hours
+GT-only,Interpretive reconstruction,23,32,27,71.9,85.2,78.0,85.0
+Semantic map only,Computational scaffold,26,32,32,81.3,81.3,81.3,2.6
+Semantic map + LLM,Scaffold + provisional interpretation,28,32,34,87.5,82.4,84.8,3.5
+Full hybrid,Audited knowledge structure,30,32,33,93.8,90.9,92.3,22.0
