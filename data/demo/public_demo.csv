@@ -1,0 +1,17 @@
+record_id,text,timestamp,platform_stratum,engagement,event_stratum
+P001,"Synthetic post: people want clear accountability after a robotaxi safety incident and an explanation of who is responsible.",2025-02-03T10:15:00,Weibo,125,safety_event
+P002,"Synthetic comment: automated mobility should make it obvious what happens after a system failure and who can intervene.",2025-02-03T11:30:00,News,42,safety_event
+P003,"Synthetic discussion: I trust the system more when I can see when control changes and how to take it back.",2024-08-21T09:20:00,Reddit,88,trust_control
+P004,"Synthetic post: loss of control is the main concern; the interface should show what the car is doing and why.",2024-08-21T14:10:00,X-Twitter,53,trust_control
+P005,"Synthetic discussion: robotaxi waiting time and pickup reliability matter more to me than futuristic interface features.",2025-01-14T08:00:00,Weibo,71,robotaxi_service
+P006,"Synthetic comment: price, pickup location, and service reliability shape whether I would actually use a robotaxi.",2025-01-14T15:45:00,Reddit,64,robotaxi_service
+P007,"Synthetic post: I do not understand what data the cabin cameras store or whether I can refuse collection.",2024-11-09T12:00:00,X-Twitter,47,privacy
+P008,"Synthetic comment: intelligent cars should explain data use and give passengers meaningful consent choices.",2024-11-09T13:35:00,News,38,privacy
+P009,"Synthetic discussion: automated mobility could help older adults if interfaces remain readable and assistance is easy to request.",2025-03-18T10:20:00,Weibo,83,accessibility
+P010,"Synthetic comment: wheelchair access and service support should be designed together, not treated as an optional feature.",2025-03-18T16:05:00,Reddit,92,accessibility
+P011,"Synthetic post: road etiquette differs by city, so the same external vehicle signal may not be interpreted the same way everywhere.",2024-06-12T07:40:00,X-Twitter,31,local_culture
+P012,"Synthetic comment: local traffic rules and driving culture should influence how autonomous vehicles communicate intent.",2024-06-12T18:25:00,News,29,local_culture
+P013,"Synthetic discussion: robotaxi expansion may change driving and service jobs, so economic effects should be part of the debate.",2025-04-02T09:15:00,Weibo,104,labour
+P014,"Synthetic post: the benefits of automation should be discussed together with possible displacement of transport workers.",2025-04-02T20:10:00,Reddit,76,labour
+P015,"Synthetic comment: pedestrians need a simple, visible signal that makes a driverless vehicle's next action easy to understand.",2024-09-27T11:10:00,X-Twitter,59,interface_legibility
+P016,"Synthetic discussion: external lights and displays should communicate vehicle intent clearly without requiring technical knowledge.",2024-09-27T17:30:00,News,44,interface_legibility
