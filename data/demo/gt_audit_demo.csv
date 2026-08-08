@@ -1,0 +1,13 @@
+record_id,open_code,axial_category,core_category,memo_id,blind_subset,final_cluster_label_visible_at_coding
+A001,"recoverable handover cue","shared agency and control","Cognitive collaboration",M001,true,false
+A002,"handover message legibility","shared agency and control","Cognitive collaboration",M001,true,false
+A005,"sensing as collaboration resource","adaptive shared agency","Cognitive collaboration",M002,true,false
+A007,"voice-gaze coordination","multimodal channel integration","Multimodal interaction",M003,true,false
+A009,"gesture-gaze fusion","multimodal channel integration","Multimodal interaction",M003,true,false
+A011,"tangible agent manifestation","physical embodiment","Embodiment modality",M004,true,false
+A013,"affect-sensitive adaptation","affective interaction","Affective/aesthetic experience",M005,true,false
+A016,"aesthetic trust cue","experience and trust","Affective/aesthetic experience",M005,true,false
+A017,"anthropomorphic expectation","social agency and trust","Anthropomorphism/trust",M006,true,false
+A019,"explanation for safety-critical decision","accountable autonomy","Safety/ethics/accessibility",M007,true,false
+A020,"consent for driver monitoring","data governance and contestability","Safety/ethics/accessibility",M007,true,false
+A021,"inclusive recovery support","accessible interaction","Safety/ethics/accessibility",M008,true,false
