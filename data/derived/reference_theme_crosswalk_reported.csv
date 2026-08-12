@@ -1,0 +1,33 @@
+id,reference_theme,primary_category,gt_only,semantic_map,map_plus_llm,full_hybrid
+T01,Embodied-design prototyping,Embodiment,Yes,Yes,Yes,Yes
+T02,Participatory vehicle design,Embodiment,Yes,No,No,Yes
+T03,Physical manifestation,Embodiment,Yes,Yes,Yes,Yes
+T04,Tangible in-vehicle interface,Embodiment,Yes,Yes,Yes,Yes
+T05,In-vehicle gesture,Multimodal,Yes,Yes,Yes,Yes
+T06,Haptic interaction,Multimodal,Yes,Yes,Yes,Yes
+T07,Voice interaction,Multimodal,Yes,Yes,Yes,Yes
+T08,Gaze interaction,Multimodal,No,Yes,Yes,Yes
+T09,Multimodal fusion,Multimodal,No,Yes,Yes,Yes
+T10,Affect recognition,Affect,Yes,Yes,Yes,Yes
+T11,Emotional design,Affect,Yes,Yes,Yes,Yes
+T12,Aesthetic cockpit experience,Affect,Yes,No,Yes,Yes
+T13,Anthropomorphic agent,Trust,Yes,Yes,Yes,Yes
+T14,Trust calibration,Trust,Yes,Yes,Yes,Yes
+T15,Shared control,Cognitive collaboration,Yes,Yes,Yes,Yes
+T16,Handover and recoverable control,Cognitive collaboration,Yes,Yes,Yes,Yes
+T17,Driver-state sensing,Cognitive collaboration,No,Yes,Yes,Yes
+T18,Cognitive alignment,Cognitive collaboration,Yes,No,No,Yes
+T19,Distributed cognition,Cognitive collaboration,Yes,No,No,Yes
+T20,4E cognition,4E / physical AI,Yes,No,No,Yes
+T21,Embodied-intelligence architecture,4E / physical AI,Yes,Yes,Yes,Yes
+T22,Physical AI,4E / physical AI,Yes,Yes,Yes,Yes
+T23,eHMI legibility,Safety / access,No,Yes,Yes,Yes
+T24,AR/MR cockpit,Safety / access,No,Yes,Yes,Yes
+T25,Safety-critical verification,Safety / access,No,Yes,Yes,Yes
+T26,Explainable vehicle AI,Safety / access,Yes,Yes,Yes,Yes
+T27,Privacy and data governance,Safety / access,Yes,Yes,Yes,Yes
+T28,Accessibility and inclusion,Safety / access,Yes,Yes,Yes,Yes
+T29,Cross-cultural HMI,Boundary,No,Yes,Yes,Yes
+T30,Robotaxi service experience,Boundary,No,Yes,Yes,No
+T31,Labour and service-system impact,Boundary,Yes,No,Yes,No
+T32,LLM/agent integration,Boundary,No,Yes,Yes,Yes
