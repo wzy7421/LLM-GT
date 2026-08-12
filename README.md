@@ -34,7 +34,7 @@ The repository mirrors the paper’s asymmetric human–AI knowledge-organizatio
 
 ## Manuscript-aligned configuration
 
-`config/paper_config.yaml` records the principal settings reported in the manuscript:
+The repository intentionally contains **one manuscript configuration file**, `config/paper_config.yaml`, matching the configuration-file scope described in the response letter. It records the principal settings reported in the manuscript:
 
 - primary embedding model: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 - sensitivity embedding model: `sentence-transformers/all-mpnet-base-v2`
@@ -55,9 +55,9 @@ The reported stochastic-sensitivity analysis used **20 fixed evidence units × 1
 
 The measured environment reported in the manuscript used Ubuntu 22.04 LTS, Python 3.11.9, CUDA 12.1, an AMD Ryzen 9 7950X with 64 GB RAM, and an NVIDIA GeForce RTX 4090 with 24 GB VRAM. The public companion records the principal software versions in `config/paper_config.yaml` and `requirements.txt`; exact wall times remain hardware- and access-dependent.
 
-## External acquisition specification
+## External acquisition audit artifact
 
-`config/external_acquisition.yaml` mirrors the manuscript’s source-specific acquisition documentation for the optional external probe:
+`data/derived/external_acquisition_reported.yaml` mirrors the manuscript’s source-specific acquisition documentation for the optional external probe. It is an **audit artifact**, not a second runtime configuration file. It records:
 
 - observation window: 1 January 2020–31 December 2025;
 - fixed Chinese query C1 and English query E1;
@@ -76,8 +76,7 @@ LLM-GT/
 ├─ .github/workflows/
 │  └─ manuscript-alignment.yml
 ├─ config/
-│  ├─ paper_config.yaml
-│  └─ external_acquisition.yaml
+│  └─ paper_config.yaml
 ├─ data/
 │  ├─ README.md
 │  ├─ demo/
@@ -94,6 +93,8 @@ LLM-GT/
 │     ├─ coder_2x2_reported.csv
 │     ├─ llm_stability_reported.csv
 │     ├─ runtime_audit_reported.csv
+│     ├─ external_acquisition_reported.yaml
+│     ├─ public_noise_audit_reported.csv
 │     ├─ platform_sensitivity_reported.csv
 │     ├─ mechanism_subset_reported.csv
 │     ├─ gap_decisions_reported.csv
@@ -137,11 +138,12 @@ The validator checks the public constants and claim boundaries mirrored from the
 - category-level reliability, 2 × 2 coder cells, and interpretive-depth values;
 - the 20-unit × 10-seed LLM stability summary;
 - three-run runtime aggregates;
-- external acquisition totals and platform-sensitivity values;
+- external acquisition totals, public-noise review counts, and platform-sensitivity values;
 - the 103-record mechanism analysis;
 - the `12 screened → 4 rejected → 8 eligible` gap audit;
 - the 20-unit human adjudication totals;
 - model, UMAP, HDBSCAN, LLM, and measured-environment constants;
+- the repository-shape requirement that `config/paper_config.yaml` is the single configuration file;
 - removal of legacy terms that would contradict the revised manuscript.
 
 The GitHub Actions workflow runs this validator automatically on pushes and pull requests. The check deliberately does **not** validate restricted raw corpora, expert judgments, or empirical provenance.
@@ -242,7 +244,8 @@ The repository does **not** estimate a percentage labor reduction. In the manusc
 | Category-level reliability and depth | `coding_reliability_reported.csv`, `coder_2x2_reported.csv`, `interpretive_depth.csv` |
 | LLM stochastic sensitivity | `llm_stability_reported.csv`, `src/stability.py` |
 | Computational environment and runtime | `config/paper_config.yaml`, `runtime_audit_reported.csv` |
-| Public-corpus acquisition transparency | `config/external_acquisition.yaml` |
+| Public-corpus acquisition transparency | `data/derived/external_acquisition_reported.yaml` |
+| Public HDBSCAN noise review | `data/derived/public_noise_audit_reported.csv` |
 | Weibo/platform sensitivity | `platform_sensitivity_reported.csv` |
 | Divergence/gate mechanism analysis | `mechanism_subset_reported.csv` |
 | Gap qualification | `gap_decisions_reported.csv`, `src/scaffold_to_claim_gate.py` |
