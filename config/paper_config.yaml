@@ -7,6 +7,7 @@ seed: 42
 
 embedding:
   model: sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+  sensitivity_model: sentence-transformers/all-mpnet-base-v2
   normalize_embeddings: true
   output_dimension: 384
 
