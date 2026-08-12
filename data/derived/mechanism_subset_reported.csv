@@ -1,0 +1,5 @@
+condition,themes_recovered,theme_denominator,coverage_percent,outliers_recovered,outlier_denominator,decision_trace_completeness_percent,claim_boundary
+GT-only,18,24,75.0,,,62.5,"No computational-outlier stage; interpretive reconstruction only"
+Semantic scaffold,19,24,79.2,3,8,,"Computational scaffold only; no human disposition stage"
+Naive sequential combination,21,24,87.5,5,8,37.5,"No mandatory divergence reinspection, structured memoing, or scaffold-to-claim gate"
+Divergence + scaffold-to-claim gate,23,24,95.8,7,8,100.0,"Mechanism condition reconstructed from frozen artifacts; no backward information leakage"
