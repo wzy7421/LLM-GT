@@ -1,12 +1,12 @@
-{"unit_id":"demo_C01","run_id":1,"seed":11,"provisional_label":"Shared control and recoverable handover","human_decision":"accept"}
-{"unit_id":"demo_C01","run_id":2,"seed":23,"provisional_label":"Shared control and recoverable handover","human_decision":"accept"}
-{"unit_id":"demo_C01","run_id":3,"seed":42,"provisional_label":"Recoverable handover and shared control","human_decision":"accept"}
-{"unit_id":"demo_C01","run_id":4,"seed":67,"provisional_label":"Shared control and recoverable handover","human_decision":"accept"}
-{"unit_id":"demo_C02","run_id":1,"seed":11,"provisional_label":"Multimodal cockpit interaction","human_decision":"rename"}
-{"unit_id":"demo_C02","run_id":2,"seed":23,"provisional_label":"Multimodal cockpit interaction","human_decision":"rename"}
-{"unit_id":"demo_C02","run_id":3,"seed":42,"provisional_label":"Voice gaze and haptic interaction","human_decision":"rename"}
-{"unit_id":"demo_C02","run_id":4,"seed":67,"provisional_label":"Multimodal cockpit interaction","human_decision":"rename"}
-{"unit_id":"demo_C03","run_id":1,"seed":11,"provisional_label":"Privacy and accountable data use","human_decision":"split"}
-{"unit_id":"demo_C03","run_id":2,"seed":23,"provisional_label":"Privacy and accountable data use","human_decision":"split"}
-{"unit_id":"demo_C03","run_id":3,"seed":42,"provisional_label":"Transparent data governance","human_decision":"boundary case"}
-{"unit_id":"demo_C03","run_id":4,"seed":67,"provisional_label":"Privacy and accountable data use","human_decision":"split"}
+{"unit_id":"demo_A01","run_id":"11","seed":11,"corpus":"academic","provisional_label":"Shared control and recoverable handover","human_decision":"accept"}
+{"unit_id":"demo_A01","run_id":"23","seed":23,"corpus":"academic","provisional_label":"Shared control and recoverable handover","human_decision":"accept"}
+{"unit_id":"demo_A01","run_id":"42","seed":42,"corpus":"academic","provisional_label":"Recoverable handover and shared control","human_decision":"accept"}
+{"unit_id":"demo_A01","run_id":"67","seed":67,"corpus":"academic","provisional_label":"Shared control and recoverable handover","human_decision":"accept"}
+{"unit_id":"demo_A02","run_id":"11","seed":11,"corpus":"academic","provisional_label":"Multimodal cockpit interaction","human_decision":"rename"}
+{"unit_id":"demo_A02","run_id":"23","seed":23,"corpus":"academic","provisional_label":"Multimodal cockpit interaction","human_decision":"rename"}
+{"unit_id":"demo_A02","run_id":"42","seed":42,"corpus":"academic","provisional_label":"Voice gaze and haptic interaction","human_decision":"rename"}
+{"unit_id":"demo_A02","run_id":"67","seed":67,"corpus":"academic","provisional_label":"Multimodal cockpit interaction","human_decision":"rename"}
+{"unit_id":"demo_P01","run_id":"11","seed":11,"corpus":"public","provisional_label":"Privacy and accountable data use","human_decision":"split"}
+{"unit_id":"demo_P01","run_id":"23","seed":23,"corpus":"public","provisional_label":"Privacy and accountable data use","human_decision":"split"}
+{"unit_id":"demo_P01","run_id":"42","seed":42,"corpus":"public","provisional_label":"Transparent data governance","human_decision":"boundary case"}
+{"unit_id":"demo_P01","run_id":"67","seed":67,"corpus":"public","provisional_label":"Privacy and accountable data use","human_decision":"split"}
