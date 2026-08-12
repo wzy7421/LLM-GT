@@ -1,0 +1,101 @@
+observation_window:
+  start: 2020-01-01
+  end: 2025-12-31
+
+scope:
+  purpose: optional case-bounded transferability probe
+  probability_sample: false
+  population_inference_permitted: false
+  core_protocol_efficacy_evidence: false
+  research_gap_eligibility_evidence: false
+  cross_domain_transfer_evidence: false
+
+queries:
+  C1: '("自动驾驶" OR "无人驾驶" OR "机器人出租车" OR "智能座舱") AND ("安全" OR "信任" OR "隐私" OR "无障碍" OR "交互")'
+  E1: '("autonomous vehicle" OR "self-driving car" OR robotaxi OR "intelligent cockpit" OR "automated driving") AND (safety OR trust OR privacy OR accessibility OR interaction)'
+  application: source-supported title, thread, article, or comment-text fields as applicable
+
+sources:
+  Weibo:
+    retrieval_route: archived licensed keyword-dataset import
+    languages: [Chinese]
+    raw_n: 17540
+    exclusions:
+      duplicate_or_spam: 1800
+      off_topic: 780
+      incomplete_or_non_interpretable: 340
+    retained_n: 14620
+    versioned_acquisition_log: WB-AV-2020-2025-v3
+    access_date: 2026-01-12
+    fixed_retrieval_artifact: WB-KW-AV-3
+    query_family: C1
+  Reddit:
+    retrieval_route: API-compliant keyword retrieval and archived-thread export
+    languages: [English]
+    raw_n: 9940
+    exclusions:
+      duplicate_or_spam: 850
+      off_topic: 430
+      incomplete_or_non_interpretable: 230
+    retained_n: 8430
+    versioned_acquisition_log: RD-AV-2020-2025-v2
+    access_date: 2026-01-13
+    fixed_retrieval_artifact: RD-EX-2
+    query_family: E1
+  X_Twitter:
+    retrieval_route: published archived-dataset import; no live scraping
+    languages: [English]
+    raw_n: 8260
+    exclusions:
+      duplicate_or_spam: 760
+      off_topic: 360
+      incomplete_or_non_interpretable: 190
+    retained_n: 6950
+    versioned_acquisition_log: XAR-AV-2020-2025-v2
+    access_date: 2026-01-14
+    fixed_retrieval_artifact: XAR-AV-2
+    query_family: E1
+  Public_news_comments:
+    retrieval_route: publisher-accessible public-comment archive import
+    languages: [Chinese, English]
+    raw_n: 5490
+    exclusions:
+      duplicate_or_spam: 510
+      off_topic: 290
+      incomplete_or_non_interpretable: 190
+    retained_n: 4500
+    versioned_acquisition_log: NC-AV-2020-2025-v2
+    access_date: 2026-01-15
+    fixed_retrieval_artifact: NC-AV-2
+    query_family: C1_or_E1_by_language
+
+totals:
+  raw_n: 41230
+  duplicate_or_spam: 3920
+  off_topic: 1860
+  incomplete_or_non_interpretable: 950
+  retained_n: 34500
+
+retained_field_schema:
+  - deidentified_record_id
+  - platform_or_source
+  - utc_normalized_publication_time
+  - language
+  - normalized_text
+  - thread_or_article_identifier
+  - query_family
+  - eligibility_decision
+  - duplicate_flag
+
+excluded_from_release:
+  - user_name
+  - profile_information
+  - direct_identifier
+  - verbatim_quotation
+
+reproducibility_boundary: >-
+  The public companion documents protocol-level acquisition specifications.
+  Exact corpus reconstruction additionally depends on lawful access to the
+  source archives and manifests under their licensing or platform conditions;
+  exact-corpus reproducibility is not claimed where those materials cannot be
+  independently accessed.
