@@ -1,0 +1,6 @@
+measure,value,denominator,notes
+Initial HDBSCAN noise labels,1987,34500,"5.8% of retained external texts before documented review"
+Initial reviewer agreement,1788,1987,"90.0% agreement on independent review"
+Multi-class Cohen kappa,0.88,,"Agreement statistic for the external noise-review task"
+Disagreements adjudicated,199,1987,"All disagreements underwent joint document-level adjudication"
+Documented final dispositions,1987,1987,"Every initially noise-labelled text received a documented disposition before final percentages"
