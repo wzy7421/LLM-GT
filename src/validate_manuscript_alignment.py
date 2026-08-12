@@ -11,6 +11,7 @@ Run from the repository root:
 
 from __future__ import annotations
 
+import hashlib
 import math
 from pathlib import Path
 
@@ -22,6 +23,14 @@ FINAL_TITLE = (
     "Human-in-the-Loop Knowledge Organization for Interdisciplinary Synthesis: "
     "Semantic Mapping, LLM-Assisted Interpretation, and Grounded Theory"
 )
+EXPECTED_JSON_KEYS = [
+    "provisional_label",
+    "two_sentence_summary",
+    "supporting_terms",
+    "alternative_label",
+    "uncertainty",
+    "prohibited_claim_check",
+]
 
 
 def close(actual: float, expected: float, tol: float = 1e-9) -> bool:
@@ -31,6 +40,10 @@ def close(actual: float, expected: float, tol: float = 1e-9) -> bool:
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
+
+
+def sha256_trimmed(path: Path) -> str:
+    return hashlib.sha256(path.read_text(encoding="utf-8").strip().encode("utf-8")).hexdigest()
 
 
 def validate_workflow_metrics() -> None:
@@ -228,6 +241,12 @@ def validate_config() -> None:
     require(int(llm["max_json_retries"]) == 2, "Invalid-JSON retry rule mismatch")
     require(llm["stochastic_sensitivity_seeds"] == [11, 23, 42, 67, 89, 101, 131, 167, 191, 223],
             "Repeated-run seed list mismatch")
+    require(llm["required_json_keys"] == EXPECTED_JSON_KEYS, "Required LLM JSON schema mismatch")
+
+    system_prompt = ROOT / "prompts/system_prompt.txt"
+    user_template = ROOT / "prompts/user_template.txt"
+    require(sha256_trimmed(system_prompt) == llm["system_prompt_sha256"], "System prompt hash mismatch")
+    require(sha256_trimmed(user_template) == llm["user_template_sha256"], "User template hash mismatch")
 
     env = cfg["measured_environment"]
     require(env["operating_system"] == "Ubuntu 22.04 LTS", "OS metadata mismatch")
@@ -283,7 +302,7 @@ def main() -> None:
     validate_config()
     validate_repository_shape()
     validate_forbidden_legacy_claims()
-    print("PASS: public companion aggregate values, repository shape, configuration, and claim boundaries match the final manuscript constants checked here.")
+    print("PASS: public companion aggregate values, repository shape, configuration, literal prompts, and claim boundaries match the final manuscript constants checked here.")
     print("Boundary: this check does not validate restricted raw data, expert judgments, or empirical provenance.")
 
 
