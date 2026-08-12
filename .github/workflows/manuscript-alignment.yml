@@ -1,0 +1,38 @@
+name: Manuscript alignment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install lightweight validation dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pandas==2.2.2 PyYAML==6.0.2
+
+      - name: Compile Python sources
+        run: python -m compileall -q src
+
+      - name: Validate manuscript-aligned public constants
+        run: python src/validate_manuscript_alignment.py
+
+      - name: Smoke-test scaffold-to-claim gate
+        run: |
+          python src/scaffold_to_claim_gate.py \
+            --input data/demo/gate_demo.csv \
+            --output /tmp/gate_decisions.csv
