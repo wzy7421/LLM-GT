@@ -50,6 +50,8 @@ The repository mirrors the paper’s asymmetric human–AI knowledge-organizatio
 
 The reported stochastic-sensitivity analysis used **20 fixed evidence units × 10 decoding seeds = 200 outputs**, with model snapshot, prompt text, input evidence, temperature, top-p, and maximum-output settings held fixed while only the decoding seed varied.
 
+The measured environment reported in the manuscript used Ubuntu 22.04 LTS, Python 3.11.9, CUDA 12.1, an AMD Ryzen 9 7950X with 64 GB RAM, and an NVIDIA GeForce RTX 4090 with 24 GB VRAM. `requirements.txt` pins the principal Python packages used by the public companion; exact wall times remain hardware- and access-dependent.
+
 ## Repository structure
 
 ```text
@@ -76,7 +78,8 @@ LLM-GT/
 │  ├─ llm_interpretation.py
 │  ├─ stability.py
 │  ├─ scaffold_to_claim_gate.py
-│  └─ plot_figure4.py
+│  ├─ plot_figure4.py
+│  └─ validate_manuscript_alignment.py
 ├─ requirements.txt
 ├─ LICENSE
 └─ README.md
@@ -89,6 +92,16 @@ python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
+
+### 0. Check repository–manuscript alignment
+
+Before using the companion, run:
+
+```bash
+python src/validate_manuscript_alignment.py
+```
+
+The validator checks the public aggregate constants and configuration that are mirrored from the final manuscript, including the frozen 32-theme denominator, workflow metrics, non-equivalent person-time endpoints, category-level depth summary, repeated-run LLM summary, and main model/UMAP/HDBSCAN settings. It deliberately does **not** validate restricted raw corpora, expert judgments, or empirical provenance.
 
 ### 1. Semantic mapping demo
 
