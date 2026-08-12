@@ -1,5 +1,6 @@
-proposition_id,proposition,document_trace_evidence,recorded_human_adjudication,independent_expert_confirmation,notes
-D-G1,"Operational measures for 4E cognition",true,true,true,"Synthetic example eligible for claim status"
-D-G2,"Localized eHMI benchmark",true,true,false,"Synthetic example held as provisional because expert confirmation is absent"
-D-G3,"Autonomous-agent safety claim",false,true,true,"Synthetic example held as provisional because document-level trace evidence is absent"
-D-G4,"Transparent mobility data governance",true,false,true,"Synthetic example held as provisional because adjudication is not recorded"
+proposition_id,proposition,document_trace_evidence,recorded_human_adjudication,independent_expert_confirmation,expert_novelty_mean,expert_importance_mean,expert_feasibility_mean,expert_traceability_mean,expert_traceability_min,notes
+D-G1,"Synthetic proposition A",true,true,true,4.1,4.3,3.8,4.0,3.0,"Synthetic example that satisfies both the scaffold gate and expert screening thresholds"
+D-G2,"Synthetic proposition B",true,true,false,4.0,4.2,4.1,4.0,3.0,"Synthetic example held as provisional because independent expert confirmation is absent"
+D-G3,"Synthetic proposition C",false,true,true,4.2,4.0,3.9,4.1,3.0,"Synthetic example held as provisional because document-level trace evidence is absent"
+D-G4,"Synthetic proposition D",true,true,true,4.0,4.1,3.2,4.0,3.0,"Synthetic example rejected because feasibility mean is below the 3.5 threshold"
+D-G5,"Synthetic proposition E",true,true,true,4.1,4.1,3.8,3.7,2.0,"Synthetic example rejected because at least one traceability rating is below 3"
