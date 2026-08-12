@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Validate aggregate repository values against the final manuscript.
+"""Validate public companion constants against the final manuscript.
 
-This validator intentionally checks only values and boundaries that are already
-reported in the manuscript and mirrored in the public companion. It does not
-validate restricted raw corpora, expert judgments, or empirical provenance.
+This validator checks only values and boundaries that are explicitly mirrored
+from the manuscript into this public companion. It does not validate restricted
+raw corpora, expert judgments, or empirical provenance.
 
 Run from the repository root:
     python src/validate_manuscript_alignment.py
@@ -19,6 +19,10 @@ import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
+FINAL_TITLE = (
+    "Human-in-the-Loop Knowledge Organization for Interdisciplinary Synthesis: "
+    "Semantic Mapping, LLM-Assisted Interpretation, and Grounded Theory"
+)
 
 
 def close(actual: float, expected: float, tol: float = 1e-9) -> bool:
@@ -52,19 +56,34 @@ def validate_workflow_metrics() -> None:
         require(close(row["precision"], precision), f"{workflow}: precision mismatch")
         require(close(row["f1"], f1), f"{workflow}: F1 mismatch")
 
-    require(pd.isna(df.loc["Full hybrid", "recorded_person_hours"]),
-            "Full hybrid must not carry a standalone person-time total")
-    require(close(df.loc["GT-only", "recorded_person_hours"], 85.0),
-            "GT-only person-time must be 85.0 h")
-    require(close(df.loc["Semantic map only", "recorded_person_hours"], 2.6),
-            "Semantic-map stage must be 2.6 h")
-    require(close(df.loc["Semantic map + LLM", "recorded_person_hours"], 3.5),
-            "Map + LLM stage must be 3.5 h")
+    require(
+        pd.isna(df.loc["Full hybrid", "recorded_person_hours"]),
+        "Full hybrid must not carry a standalone person-time total",
+    )
+    require(
+        str(df.loc["Full hybrid", "time_endpoint"]) == "Standalone total not reported",
+        "Full hybrid time endpoint must state that the standalone total is not reported",
+    )
+    require(close(df.loc["GT-only", "recorded_person_hours"], 85.0), "GT-only person-time must be 85.0 h")
+    require(
+        close(df.loc["Semantic map only", "recorded_person_hours"], 2.6),
+        "Semantic-map stage must be 2.6 h",
+    )
+    require(
+        close(df.loc["Semantic map + LLM", "recorded_person_hours"], 3.5),
+        "Map + LLM stage must be 3.5 h",
+    )
 
     post = "Post-GT hybrid integration and adjudication"
     require(post in df.index, "Missing post-GT integration/adjudication row")
-    require(close(df.loc[post, "recorded_person_hours"], 22.0),
-            "Post-GT integration/adjudication must be 22.0 h additional")
+    require(
+        close(df.loc[post, "recorded_person_hours"], 22.0),
+        "Post-GT integration/adjudication must be 22.0 h additional",
+    )
+    require(
+        str(df.loc[post, "time_endpoint"]) == "Additional after frozen corpus-level GT reconstruction",
+        "Post-GT row must preserve the non-equivalent endpoint boundary",
+    )
 
 
 def validate_stability() -> None:
@@ -97,39 +116,99 @@ def validate_depth() -> None:
     require(close(df.loc["Mean", "gt_only"], 4.51), "GT-only mean depth must be 4.51")
     require(close(df.loc["Mean", "full_hybrid"], 4.30), "Full-hybrid mean depth must be 4.30")
     require(close(df.loc["Mean", "delta_hybrid_minus_gt"], -0.21), "Mean depth delta must be -0.21")
-    require(close(df.loc["Cognitive collaboration", "delta_hybrid_minus_gt"], -0.9),
-            "Cognitive collaboration delta must be -0.9")
-    require(close(df.loc["4E cognition/physical AI", "delta_hybrid_minus_gt"], -0.6),
-            "4E cognition/physical AI delta must be -0.6")
+    require(
+        close(df.loc["Cognitive collaboration", "delta_hybrid_minus_gt"], -0.9),
+        "Cognitive collaboration delta must be -0.9",
+    )
+    require(
+        close(df.loc["4E cognition/physical AI", "delta_hybrid_minus_gt"], -0.6),
+        "4E cognition/physical AI delta must be -0.6",
+    )
 
 
 def validate_config() -> None:
     path = ROOT / "config/paper_config.yaml"
     cfg = yaml.safe_load(path.read_text(encoding="utf-8"))
 
-    require(cfg["embedding"]["model"] == "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-            "Embedding model mismatch")
-    require(cfg["umap"] == {
-        "n_neighbors": 15,
-        "min_dist": 0.0,
-        "n_components": 5,
-        "metric": "cosine",
-        "random_state": 42,
-    }, "UMAP configuration mismatch")
+    require(cfg["manuscript"]["title"] == FINAL_TITLE, "Manuscript title mismatch")
+    require(cfg["manuscript"]["previous_reference"] == "IPM-D-26-03845", "Previous reference mismatch")
+    require(cfg["manuscript"]["journal"] == "Information Processing & Management", "Journal metadata mismatch")
+
+    require(
+        cfg["embedding"]["model"] == "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "Embedding model mismatch",
+    )
+    require(int(cfg["embedding"]["output_dimension"]) == 384, "Embedding dimension mismatch")
+    require(
+        cfg["umap"]
+        == {
+            "n_neighbors": 15,
+            "min_dist": 0.0,
+            "n_components": 5,
+            "metric": "cosine",
+            "random_state": 42,
+        },
+        "UMAP configuration mismatch",
+    )
     require(cfg["hdbscan"]["academic"]["min_cluster_size"] == 5, "Academic min_cluster_size mismatch")
     require(cfg["hdbscan"]["academic"]["min_samples"] == 5, "Academic min_samples mismatch")
     require(cfg["hdbscan"]["public"]["min_cluster_size"] == 30, "External min_cluster_size mismatch")
     require(cfg["hdbscan"]["public"]["min_samples"] == 10, "External min_samples mismatch")
+
     require(cfg["llm"]["model"] == "gpt-4o-2024-11-20", "LLM snapshot mismatch")
+    require(cfg["llm"]["endpoint"] == "v1/chat/completions", "Endpoint mismatch")
+    require(str(cfg["llm"]["primary_run_date"]) == "2026-06-18", "Primary LLM run date mismatch")
+    require(cfg["llm"]["client_sdk"] == "openai==1.35.13", "OpenAI SDK metadata mismatch")
     require(close(cfg["llm"]["temperature"], 0.2), "Temperature mismatch")
     require(close(cfg["llm"]["top_p"], 0.9), "top_p mismatch")
     require(int(cfg["llm"]["seed"]) == 42, "Primary decoding seed mismatch")
     require(int(cfg["llm"]["max_tokens"]) == 600, "Maximum output mismatch")
-    require(cfg["llm"]["stochastic_sensitivity_seeds"] == [11, 23, 42, 67, 89, 101, 131, 167, 191, 223],
-            "Repeated-run seed list mismatch")
-    require(int(cfg["evaluation"]["reference_theme_count"]) == 32, "Reference-theme denominator mismatch")
-    require(int(cfg["evaluation"]["academic_record_count"]) == 412, "Academic record count mismatch")
-    require(int(cfg["evaluation"]["external_record_count"]) == 34500, "External record count mismatch")
+    require(int(cfg["llm"]["max_json_retries"]) == 2, "Invalid-JSON retry rule mismatch")
+    require(
+        cfg["llm"]["stochastic_sensitivity_seeds"] == [11, 23, 42, 67, 89, 101, 131, 167, 191, 223],
+        "Repeated-run seed list mismatch",
+    )
+
+    env = cfg["measured_environment"]
+    require(env["operating_system"] == "Ubuntu 22.04 LTS", "Operating-system metadata mismatch")
+    require(env["cpu"] == "AMD Ryzen 9 7950X", "CPU metadata mismatch")
+    require(int(env["system_ram_gb"]) == 64, "RAM metadata mismatch")
+    require(env["gpu"] == "NVIDIA GeForce RTX 4090", "GPU metadata mismatch")
+    require(int(env["vram_gb"]) == 24, "VRAM metadata mismatch")
+    require(str(env["python"]) == "3.11.9", "Python metadata mismatch")
+    require(str(env["cuda"]) == "12.1", "CUDA metadata mismatch")
+    require(str(env["pytorch"]) == "2.3.1+cu121", "PyTorch metadata mismatch")
+    require(str(env["sentence_transformers"]) == "3.0.1", "sentence-transformers metadata mismatch")
+    require(str(env["umap_learn"]) == "0.5.6", "UMAP package metadata mismatch")
+    require(str(env["hdbscan"]) == "0.8.38.post1", "HDBSCAN package metadata mismatch")
+    require(str(env["scikit_learn"]) == "1.5.1", "scikit-learn metadata mismatch")
+
+    evaluation = cfg["evaluation"]
+    require(int(evaluation["reference_theme_count"]) == 32, "Reference-theme denominator mismatch")
+    require(int(evaluation["blind_subset_size"]) == 103, "Reliability subset-size mismatch")
+    require(int(evaluation["academic_record_count"]) == 412, "Academic record count mismatch")
+    require(int(evaluation["external_record_count"]) == 34500, "External record count mismatch")
+    require(int(evaluation["academic_clusters"]) == 12, "Academic cluster-count mismatch")
+    require(int(evaluation["academic_outliers"]) == 33, "Academic outlier-count mismatch")
+    require(int(evaluation["public_topic_families"]) == 8, "External topic-family count mismatch")
+
+
+def validate_forbidden_legacy_claims() -> None:
+    files = [
+        ROOT / "README.md",
+        ROOT / "data/README.md",
+        ROOT / "src/plot_figure4.py",
+    ]
+    forbidden = [
+        "74.1% lower",
+        "74% labor reduction",
+        "public-discourse triangulation",
+        "LLM-assisted semantic clustering",
+    ]
+    for path in files:
+        text = path.read_text(encoding="utf-8").lower()
+        for phrase in forbidden:
+            require(phrase.lower() not in text, f"Legacy claim remains in {path.name}: {phrase}")
 
 
 def main() -> None:
@@ -137,7 +216,8 @@ def main() -> None:
     validate_stability()
     validate_depth()
     validate_config()
-    print("PASS: public companion aggregate values and configuration match the final manuscript constants checked here.")
+    validate_forbidden_legacy_claims()
+    print("PASS: public companion aggregate values, configuration, and claim boundaries match the final manuscript constants checked here.")
     print("Boundary: this check does not validate restricted raw data, expert judgments, or empirical provenance.")
 
 
