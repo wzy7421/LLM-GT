@@ -1,0 +1,13 @@
+id,proposition,initial_cue,trace_evidence,final_status
+G1,4E cognition operationalization,Sparse operational measures,"GT memo + 11 papers",Eligible
+G2,Safety-critical LLM-agent evaluation,Fragmented validation evidence,"Divergence memo + 14 papers",Eligible
+G3,Cognitive alignment metrics,Conceptual/measurement mismatch,"GT memo + 9 papers",Eligible
+G4,Inclusive intelligent-mobility access,Interface/service boundary,"GT-computational integration memo + 12 scholarly papers",Eligible
+G5,Cross-cultural adaptation,Outlier concentration,"Outlier audit + 8 papers",Eligible
+G6,Public accountability,Safety framing divergence,"Divergence memo + 10 papers",Eligible
+G7,Experiential trust,Reliability-assurance translation,"GT memo + 13 papers",Eligible
+G8,Transparent data governance,Opaque AI/privacy cue,"Boundary memo + 7 papers",Eligible
+G9,Localized eHMI,Context-sensitive legibility,"Overlapped G5; distinctness below threshold",Rejected
+G10,Longitudinal robotaxi learning,Service evidence short horizon,"Six-paper trace; traceability below threshold",Rejected
+G11,Embodied-agent benchmarks,Incompatible evaluation units,"Expert feasibility rating below threshold",Rejected
+G12,Recoverable human control,Handover/control divergence,"Subsumed under G3 and G7 after adjudication",Rejected
