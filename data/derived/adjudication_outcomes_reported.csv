@@ -1,0 +1,8 @@
+decision,n,operational_meaning
+Accept,7,"Provisional interpretation supported without structural change"
+Rename,5,"Evidence supported the unit but not the proposed label"
+Split,3,"One provisional unit contained distinct conceptual relations"
+Merge,2,"Separate provisional units represented one higher-order relation"
+Reject,1,"Evidence did not support a stable interpretable unit"
+Boundary case,2,"Retained as context-sensitive or unresolved"
+Total,20,"12 academic clusters + 8 public-topic families"
