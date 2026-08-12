@@ -147,14 +147,21 @@ def validate_runtime() -> None:
 
 
 def validate_external_probe() -> None:
-    cfg = yaml.safe_load((ROOT / "config/external_acquisition.yaml").read_text(encoding="utf-8"))
+    acquisition_path = ROOT / "data/derived/external_acquisition_reported.yaml"
+    cfg = yaml.safe_load(acquisition_path.read_text(encoding="utf-8"))
     require(str(cfg["observation_window"]["start"]) == "2020-01-01", "External observation start mismatch")
     require(str(cfg["observation_window"]["end"]) == "2025-12-31", "External observation end mismatch")
     require(cfg["scope"]["probability_sample"] is False, "External corpus must not be marked as a probability sample")
     require(cfg["scope"]["population_inference_permitted"] is False, "Population inference must remain prohibited")
     require(int(cfg["totals"]["raw_n"]) == 41230, "External raw total mismatch")
+    require(int(cfg["totals"]["duplicate_or_spam"]) == 3920, "External duplicate/spam total mismatch")
+    require(int(cfg["totals"]["off_topic"]) == 1860, "External off-topic total mismatch")
+    require(int(cfg["totals"]["incomplete_or_non_interpretable"]) == 950, "External incomplete total mismatch")
     require(int(cfg["totals"]["retained_n"]) == 34500, "External retained total mismatch")
-    require(sum(int(v["retained_n"]) for v in cfg["sources"].values()) == 34500, "Source retained counts do not sum to 34,500")
+    require(sum(int(v["retained_n"]) for v in cfg["sources"].values()) == 34500,
+            "Source retained counts do not sum to 34,500")
+    require("自动驾驶" in cfg["queries"]["C1"] and "autonomous vehicle" in cfg["queries"]["E1"],
+            "Fixed C1/E1 retrieval expressions are missing")
 
     platform = pd.read_csv(ROOT / "data/derived/platform_sensitivity_reported.csv").set_index("topic")
     totals = platform.loc["Column total"]
@@ -162,6 +169,13 @@ def validate_external_probe() -> None:
         require(close(totals[col], 100.0), f"Platform-sensitivity column {col} does not sum to 100")
     require(close(platform.loc["Safety/accountability", "observed"], 26.8), "Observed safety prevalence mismatch")
     require(close(platform.loc["Safety/accountability", "no_weibo"], 28.1), "No-Weibo safety prevalence mismatch")
+
+    noise = pd.read_csv(ROOT / "data/derived/public_noise_audit_reported.csv").set_index("measure")
+    require(int(float(noise.loc["Initial HDBSCAN noise labels", "value"])) == 1987, "Noise-label count mismatch")
+    require(int(float(noise.loc["Initial reviewer agreement", "value"])) == 1788, "Noise-review agreement count mismatch")
+    require(close(noise.loc["Multi-class Cohen kappa", "value"], 0.88), "Noise-review kappa mismatch")
+    require(int(float(noise.loc["Disagreements adjudicated", "value"])) == 199, "Noise-review disagreement count mismatch")
+    require(int(float(noise.loc["Documented final dispositions", "value"])) == 1987, "Noise-review disposition count mismatch")
 
 
 def validate_mechanism_and_gap_audit() -> None:
@@ -236,6 +250,12 @@ def validate_config() -> None:
         require(int(evaluation[key]) == value, f"Evaluation constant mismatch: {key}")
 
 
+def validate_repository_shape() -> None:
+    config_files = sorted((ROOT / "config").glob("*.yaml"))
+    require([p.name for p in config_files] == ["paper_config.yaml"],
+            "Response letter states there is one configuration file: config/paper_config.yaml")
+
+
 def validate_forbidden_legacy_claims() -> None:
     paths = [
         ROOT / "README.md", ROOT / "data/README.md",
@@ -261,8 +281,9 @@ def main() -> None:
     validate_external_probe()
     validate_mechanism_and_gap_audit()
     validate_config()
+    validate_repository_shape()
     validate_forbidden_legacy_claims()
-    print("PASS: public companion aggregate values, configuration, and claim boundaries match the final manuscript constants checked here.")
+    print("PASS: public companion aggregate values, repository shape, configuration, and claim boundaries match the final manuscript constants checked here.")
     print("Boundary: this check does not validate restricted raw data, expert judgments, or empirical provenance.")
 
 
