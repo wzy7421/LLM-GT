@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""Paper-aligned semantic mapping demo.
+"""Paper-aligned semantic-mapping demonstration.
 
-This script mirrors the computational scaffold described in the manuscript:
-SentenceTransformer embeddings -> UMAP -> HDBSCAN -> c-TF-IDF.
+This script mirrors the manuscript's computational scaffold:
+SentenceTransformer embeddings -> UMAP -> HDBSCAN -> class-based TF-IDF.
 
-It does NOT use an LLM for clustering and does NOT convert clusters into final
-knowledge claims. Demo CSVs are synthetic schema examples only.
+Important boundaries
+--------------------
+- No generative LLM is used for clustering.
+- Cluster membership is determined before any LLM-assisted interpretation.
+- The exported clusters, terms, and outlier flags are provisional computational
+  scaffolds rather than final theoretical categories or research-gap claims.
+- Demo CSVs are synthetic schema examples only and are not the empirical corpora.
 """
 
 from __future__ import annotations
@@ -46,16 +51,23 @@ def build_documents(df: pd.DataFrame, corpus: str) -> pd.Series:
     return df["text"].fillna("").astype(str)
 
 
-def ctfidf_top_terms(
+def class_tfidf_top_terms(
     documents: pd.Series,
     labels: np.ndarray,
     top_n: int = 10,
     stop_words: str | None = "english",
 ) -> dict[int, list[str]]:
-    """Compute a compact class-based TF-IDF representation.
+    """Return top terms from a compact class-based TF-IDF representation.
 
-    Noise points (cluster -1) are intentionally excluded from topic-term
-    generation but remain in the exported document-level audit table.
+    Documents assigned to the same HDBSCAN cluster are concatenated into one
+    class document. Term frequency is L1-normalized within each class. The IDF
+    factor uses the average number of words per class divided by corpus-wide
+    term frequency, following the class-based representation used by the
+    BERTopic family. This is an inspectable implementation rather than a claim
+    of algorithmic novelty.
+
+    Noise points (cluster -1) are intentionally excluded from class-term
+    generation but remain present in the exported document-level audit table.
     """
     tmp = pd.DataFrame({"document": documents, "cluster": labels})
     tmp = tmp[tmp["cluster"] != -1]
@@ -64,15 +76,17 @@ def ctfidf_top_terms(
 
     class_docs = tmp.groupby("cluster", sort=True)["document"].apply(" ".join)
     vectorizer = CountVectorizer(stop_words=stop_words)
-    X = vectorizer.fit_transform(class_docs.values)
+    matrix = vectorizer.fit_transform(class_docs.values)
 
-    counts = X.toarray().astype(float)
-    row_sums = counts.sum(axis=1, keepdims=True)
-    row_sums[row_sums == 0] = 1.0
-    tf = counts / row_sums
+    counts = matrix.toarray().astype(float)
+    class_lengths = counts.sum(axis=1, keepdims=True)
+    class_lengths[class_lengths == 0] = 1.0
+    tf = counts / class_lengths
 
-    doc_freq = (counts > 0).sum(axis=0)
-    idf = np.log((1 + len(class_docs)) / (1 + doc_freq)) + 1.0
+    term_frequency = counts.sum(axis=0)
+    term_frequency[term_frequency == 0] = 1.0
+    average_words_per_class = float(counts.sum(axis=1).mean())
+    idf = np.log1p(average_words_per_class / term_frequency)
     scores = tf * idf
 
     vocab = np.asarray(vectorizer.get_feature_names_out())
@@ -89,13 +103,19 @@ def main() -> None:
     parser.add_argument("--corpus", choices=["academic", "public"], required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--config", default="config/paper_config.yaml")
+    parser.add_argument(
+        "--embedding-model",
+        default=None,
+        help="Optional model override for sensitivity checks; primary paper model is used by default.",
+    )
     args = parser.parse_args()
 
     cfg = load_config(args.config)
     df = pd.read_csv(args.input)
     documents = build_documents(df, args.corpus)
 
-    model = SentenceTransformer(cfg["embedding"]["model"])
+    model_name = args.embedding_model or cfg["embedding"]["model"]
+    model = SentenceTransformer(model_name)
     embeddings = model.encode(
         documents.tolist(),
         normalize_embeddings=cfg["embedding"].get("normalize_embeddings", True),
@@ -121,7 +141,7 @@ def main() -> None:
     )
     labels = clusterer.fit_predict(reduced)
 
-    terms = ctfidf_top_terms(
+    terms = class_tfidf_top_terms(
         documents,
         labels,
         top_n=cfg["ctfidf"]["top_n_terms"],
@@ -129,6 +149,7 @@ def main() -> None:
     )
 
     out = df.copy()
+    out["embedding_model"] = model_name
     out["cluster"] = labels
     out["is_outlier"] = labels == -1
     out["top_c_tfidf_terms"] = [
@@ -137,7 +158,7 @@ def main() -> None:
     ]
 
     for i in range(reduced.shape[1]):
-        out[f"umap_dim_{i+1}"] = reduced[:, i]
+        out[f"umap_dim_{i + 1}"] = reduced[:, i]
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -146,8 +167,9 @@ def main() -> None:
     n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
     n_outliers = int((labels == -1).sum())
     print(f"Saved: {output_path}")
-    print(f"Clusters: {n_clusters}; audited outlier flags: {n_outliers}")
-    print("Reminder: cluster outputs are provisional computational scaffolds, not findings.")
+    print(f"Embedding model: {model_name}")
+    print(f"Clusters: {n_clusters}; HDBSCAN outlier/noise flags: {n_outliers}")
+    print("Reminder: these outputs are provisional computational scaffolds, not findings.")
 
 
 if __name__ == "__main__":
