@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """Repeated-output diagnostics for provisional post-cluster LLM labels.
 
-Expected JSONL fields per line:
-  unit_id, run_id, provisional_label, human_decision
+Required JSONL fields per line:
+  unit_id, run_id, provisional_label
 Optional fields:
-  seed, corpus
+  seed, corpus, human_decision
 
 Primary manuscript-facing diagnostics are:
   - mean pairwise label similarity within each fixed evidence unit,
   - unit-level modal-label agreement,
-  - downstream human-decision invariance.
+  - downstream human-decision invariance when blinded human decisions are present.
 
 A pooled exact-string Fleiss' kappa is also calculated for traceability when a
-common count matrix can be formed. Because different semantic units may have
+count matrix can be formed. Because different semantic units may have
 unit-specific label vocabularies, that pooled coefficient should be treated as
 descriptive rather than as a conventional cross-unit agreement statistic.
 None of these diagnostics establishes semantic correctness or construct
@@ -80,7 +80,7 @@ def read_jsonl(path: str) -> pd.DataFrame:
         if line.strip():
             rows.append(json.loads(line))
     df = pd.DataFrame(rows)
-    required = {"unit_id", "run_id", "provisional_label", "human_decision"}
+    required = {"unit_id", "run_id", "provisional_label"}
     missing = required.difference(df.columns)
     if missing:
         raise ValueError(f"Missing required JSONL fields: {sorted(missing)}")
@@ -91,11 +91,20 @@ def read_jsonl(path: str) -> pd.DataFrame:
 
 def per_unit_summary(df: pd.DataFrame) -> pd.DataFrame:
     summaries = []
+    decision_available = "human_decision" in df.columns
+
     for unit_id, group in df.groupby("unit_id", sort=True):
         labels = group["provisional_label"].astype(str).tolist()
-        decisions = group["human_decision"].astype(str).tolist()
         normalized = [normalize_label(x) for x in labels]
-        corpus = group["corpus"].iloc[0] if "corpus" in group.columns else "overall"
+        corpus = group["corpus"].iloc[0] if "corpus" in group.columns else "unspecified"
+
+        decision_invariant: bool | None = None
+        unique_decisions: int | None = None
+        if decision_available:
+            decision_series = group["human_decision"].dropna().astype(str)
+            if len(decision_series) == len(group):
+                decision_invariant = len(set(decision_series.tolist())) == 1
+                unique_decisions = len(set(decision_series.tolist()))
 
         summaries.append(
             {
@@ -104,9 +113,9 @@ def per_unit_summary(df: pd.DataFrame) -> pd.DataFrame:
                 "n_runs": len(group),
                 "mean_pairwise_label_similarity": mean_pairwise_similarity(labels),
                 "modal_label_agreement": modal_agreement(labels),
-                "decision_invariant": len(set(decisions)) == 1,
+                "decision_invariant": decision_invariant,
                 "unique_labels": len(set(normalized)),
-                "unique_decisions": len(set(decisions)),
+                "unique_decisions": unique_decisions,
             }
         )
     return pd.DataFrame(summaries)
@@ -128,6 +137,11 @@ def descriptive_exact_string_kappa(df: pd.DataFrame) -> float:
 
 def aggregate_block(df: pd.DataFrame, summary_df: pd.DataFrame, label: str) -> dict:
     kappa = descriptive_exact_string_kappa(df)
+
+    decision_values = summary_df["decision_invariant"].dropna()
+    decision_n = int(decision_values.astype(bool).sum()) if len(decision_values) else pd.NA
+    decision_total = int(len(decision_values)) if len(decision_values) else pd.NA
+
     return {
         "units": label,
         "outputs": int(df.shape[0]),
@@ -137,8 +151,8 @@ def aggregate_block(df: pd.DataFrame, summary_df: pd.DataFrame, label: str) -> d
         else 0.0,
         "modal_agreement": float(summary_df["modal_label_agreement"].mean()),
         "fleiss_kappa": kappa,
-        "decision_invariance_n": int(summary_df["decision_invariant"].sum()),
-        "decision_invariance_total": int(summary_df.shape[0]),
+        "decision_invariance_n": decision_n,
+        "decision_invariance_total": decision_total,
     }
 
 
@@ -154,8 +168,9 @@ def main() -> None:
 
     blocks: list[dict] = []
     if "corpus" in df.columns:
-        corpus_order = [x for x in ["academic", "public"] if x in set(df["corpus"].astype(str))]
-        corpus_order += [x for x in sorted(set(df["corpus"].astype(str))) if x not in corpus_order]
+        corpus_values = set(df["corpus"].astype(str))
+        corpus_order = [x for x in ["academic", "public"] if x in corpus_values]
+        corpus_order += [x for x in sorted(corpus_values) if x not in corpus_order]
         display = {"academic": "Academic clusters", "public": "Public topic families"}
         for corpus in corpus_order:
             raw_subset = df[df["corpus"].astype(str) == corpus]
@@ -167,9 +182,9 @@ def main() -> None:
 
     print(aggregate_df.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
     print(
-        "\nInterpretation boundary: pairwise similarity, modal agreement, and decision invariance "
-        "measure local repeatability under the supplied configuration. The pooled exact-string "
-        "Fleiss' kappa is descriptive because semantic units may not share a prespecified nominal label set."
+        "\nInterpretation boundary: pairwise similarity and modal agreement measure local wording repeatability. "
+        "Decision invariance is calculated only when every run for a unit has a blinded human_decision value. "
+        "The pooled exact-string Fleiss' kappa is descriptive because semantic units may not share a prespecified nominal label set."
     )
 
     if args.output:
