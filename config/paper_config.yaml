@@ -46,6 +46,15 @@ llm:
   max_json_retries: 2
   paper_repeatability_runs: 10
   stochastic_sensitivity_seeds: [11, 23, 42, 67, 89, 101, 131, 167, 191, 223]
+  system_prompt_sha256: 824cd1dc7eae38267ffdf192fd4e8a62f6ad58c060ee90fe31d61e7d51c29ffe
+  user_template_sha256: 0ce4bbdf709b3e80138445a9dbbcc79862befc77fd64ce07be359b78068d4eb0
+  required_json_keys:
+    - provisional_label
+    - two_sentence_summary
+    - supporting_terms
+    - alternative_label
+    - uncertainty
+    - prohibited_claim_check
 
 measured_environment:
   operating_system: Ubuntu 22.04 LTS
