@@ -8,8 +8,6 @@ Reproducibility companion for the manuscript **“Human-in-the-Loop Knowledge Or
 
 This repository provides a **schema-compatible, executable, reviewer-facing companion** for the computational and audit components described in the manuscript. It is designed to make the semantic-mapping pipeline, fixed LLM prompt structure, role-aligned evaluation logic, repeated-run stability diagnostics, divergence/adjudication logic, scaffold-to-claim gate, acquisition specifications, and manuscript-reported aggregate audit tables inspectable without redistributing licensed academic metadata or restricted user-generated records.
 
-The repository is **not** a replacement for the manuscript and does not contain the empirical 412-publication scholarly corpus or the 34,500-text external issue-public corpus. Files in `data/demo/` are synthetic examples created only to demonstrate schemas and execution paths. Files in `data/derived/` mirror aggregate or audit-level values already reported in the manuscript.
-
 ## Core methodological boundary
 
 The repository mirrors the paper’s asymmetric human–AI knowledge-organization protocol:
