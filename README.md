@@ -51,7 +51,7 @@ The repository intentionally contains **one manuscript configuration file**, `co
 
 The reported stochastic-sensitivity analysis used **20 fixed evidence units × 10 decoding seeds = 200 outputs**, with model snapshot, prompt text, input evidence, temperature, top-p, and maximum-output settings held fixed while only the decoding seed varied.
 
-The measured environment reported in the manuscript used Ubuntu 22.04 LTS, Python 3.11.9, CUDA 12.1, an AMD Ryzen 9 7950X with 64 GB RAM, and an NVIDIA GeForce RTX 4090 with 24 GB VRAM. The public companion records the principal software versions in `config/paper_config.yaml` and `requirements.txt`; exact wall times remain hardware- and access-dependent.
+The measured environment reported in the manuscript used Ubuntu 22.04 LTS, Python 3.11.9, CUDA 12.1, an AMD Ryzen 9 7950X with 64 GB RAM, and an NVIDIA GeForce RTX A5000 with 24 GB VRAM. The public companion records the principal software versions in `config/paper_config.yaml` and `requirements.txt`; exact wall times remain hardware- and access-dependent.
 
 ## External acquisition audit artifact
 
