@@ -1,0 +1,2 @@
+candidate_id,workflow,source_publication_ids,candidate_label,reviewer_a_support_binary,reviewer_b_support_binary,documentary_support_basis,conceptual_distinctness_basis,disagreement_and_resolution,final_category,supporting_memo_id,documentary_evidence_location,adjudication_artifact_sha256
+DEMO_C02,Pure automated LLM,DEMO_P002,Hypothetical new cue,1,1,HYPOTHETICAL,HYPOTHETICAL,,supported_inventory_external,DEMO_M01,,

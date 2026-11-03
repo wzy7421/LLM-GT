@@ -1,0 +1,10 @@
+dispute_id,candidate_id,assessor_1_original,assessor_2_original,assessor_1_theme_id,assessor_2_theme_id,third_party_adjudicator_id,source_document_ids_inspected,dispute_reason,adjudication_date_utc,evidence_rationale,final_reference_match_binary,final_reference_theme_id,original_decisions_locked_before_adjudication,adjudication_artifact_path,artifact_sha256
+TMP_DISPUTE_01,,,,,,,,,,,,,,,
+TMP_DISPUTE_02,,,,,,,,,,,,,,,
+TMP_DISPUTE_03,,,,,,,,,,,,,,,
+TMP_DISPUTE_04,,,,,,,,,,,,,,,
+TMP_DISPUTE_05,,,,,,,,,,,,,,,
+TMP_DISPUTE_06,,,,,,,,,,,,,,,
+TMP_DISPUTE_07,,,,,,,,,,,,,,,
+TMP_DISPUTE_08,,,,,,,,,,,,,,,
+TMP_DISPUTE_09,,,,,,,,,,,,,,,

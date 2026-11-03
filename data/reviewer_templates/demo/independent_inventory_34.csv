@@ -1,0 +1,2 @@
+theme_id,theme_label,conceptual_definition,inclusion_criteria,exclusion_boundary,supporting_publication_ids,reference_panel_id,construction_record_id,evidence_checked_by,freeze_version,evidence_access_status
+DEMO_I01,Illustrative trust calibration theme,Hypothetical category; not a real coded paper outcome,Hypothetical confidence adjustment,Exclude generic trust,DEMO_P001,DEMO_PANEL,DEMO_NOTE,,DEMO_V0,

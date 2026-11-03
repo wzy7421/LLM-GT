@@ -1,0 +1,2 @@
+batch_id,expected_record_count,ordinal_first,ordinal_last,actual_publication_ids,input_manifest_path,input_manifest_sha256,fixed_model_snapshot,prompt_version,actual_request_ids,utc_execution_timestamp,actual_output_path,output_sha256,retry_log_path,status,original_execution_evidence_verified
+DEMO_B01,2,1,2,DEMO_P001;DEMO_P002,,,DEMO_NO_MODEL,,DEMO_NO_REQUEST,,,,,NOT_EXECUTED,NO

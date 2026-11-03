@@ -1,0 +1,2 @@
+event_id,stage,batch_id,input_artifact_sha256,model_snapshot,prompt_hash,temperature,top_p,seed,max_output_tokens,request_id,response_id,utc_timestamp,output_artifact_path,output_sha256,retry_count,validation_status,is_real_execution_verified,notes
+DEMO_EVT01,batch_generate,DEMO_B01,,DEMO_NO_MODEL,,,,,,DEMO_NO_REQUEST,DEMO_NO_RESPONSE,DEMO_NOT_REAL,,,,,NO,EXAMPLE ONLY; no API call

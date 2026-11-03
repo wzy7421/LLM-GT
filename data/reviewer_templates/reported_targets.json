@@ -1,0 +1,28 @@
+{
+  "source": "Reported manuscript aggregates only, NOT validated row-level observations",
+  "inventory": 34,
+  "matching_packets": 197,
+  "workflow_packet_counts": {
+    "GT-only": 27,
+    "Semantic map only": 32,
+    "Map + LLM labeling": 34,
+    "Pure automated LLM": 37,
+    "Naive sequential": 34,
+    "Full hybrid governance": 33
+  },
+  "assessors_joint_yes": 164,
+  "joint_no": 24,
+  "first_only": 4,
+  "second_only": 5,
+  "disputes": 9,
+  "final_matched": 167,
+  "final_supported_external": 15,
+  "final_other": 15,
+  "publication_count": 412,
+  "pure_llm_batches": 17,
+  "pure_llm_frozen_candidates": 37,
+  "subset_denominator": 24,
+  "naive_recovered": 21,
+  "full_recovered": 23,
+  "exact_mcnemar_p": 0.5
+}

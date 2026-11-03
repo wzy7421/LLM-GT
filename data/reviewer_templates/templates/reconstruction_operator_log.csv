@@ -1,0 +1,5 @@
+condition,operator_anonymous_id,execution_order,started_utc,finished_utc,frozen_input_manifest_path,frozen_input_sha256,permitted_artifact_categories,actual_accessed_artifact_ids,exposure_to_other_conditions,access_log_path,output_artifact_path,output_sha256,exception_report_path,status
+GT-only,,,,,,,,,,,,,,
+Semantic scaffold only,,,,,,,,,,,,,,
+Naive sequential,,,,,,,,,,,,,,
+Full hybrid governance,,,,,,,,,,,,,,

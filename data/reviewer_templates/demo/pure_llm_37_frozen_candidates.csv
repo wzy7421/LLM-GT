@@ -1,0 +1,2 @@
+candidate_id,originating_batch_theme_ids,merge_source_candidate_ids,final_label,supporting_publication_ids,documentary_relationship_summary,consolidation_rule,machine_output_file,output_freeze_sha256,human_edit_in_comparator,verification_status
+DEMO_LLM_C01,DEMO_B01_T01,,Example theme (not actual output),DEMO_P001,,,,,,NOT_EXECUTED

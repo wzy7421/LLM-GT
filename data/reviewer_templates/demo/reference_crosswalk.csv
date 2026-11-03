@@ -1,0 +1,2 @@
+publication_id,doi_or_persistent_locator,title_or_metadata_reference,search_source,full_text_available_under_license,reference_theme_ids,original_32_theme_ids,candidate_ids,gt_open_code_ids,gt_axial_category_ids,gt_core_category_ids,divergence_memo_ids,claim_adjudication_ids,record_level_evidence_pointer,permission_public_metadata_only,record_manifest_sha256
+DEMO_P001,NOT_REAL,Imaginary example paper,DEMO_ACM,,DEMO_I01,,DEMO_C02,,,,,,,YES,

@@ -1,0 +1,2 @@
+theme_id,condition,recovered_binary,candidate_id_supporting_decision,source_publication_ids,operator_id,output_freeze_id,decision_record_id,audit_note
+DEMO_S01,Full hybrid governance,1,,,DEMO_OP,,,Hypothetical example; no actual scoring
