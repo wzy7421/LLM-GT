@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
-"""Regenerate the manuscript-aligned role-specific comparison (Fig. 4).
+"""Draw manuscript Fig. 4 panel values from reported aggregate tables only.
 
-The script uses only aggregate values already reported in the manuscript.
-Panel A compares shared reference-theme metrics across the four workflows.
-Panel B reports recorded person-time only at its documented, non-equivalent
-activity endpoints; it does not estimate a percentage labor reduction and does
-not treat the 22.0 h post-GT stage as a standalone full-hybrid total.
-Panel C compares interpretive depth only for GT-containing workflows.
+Panel A: selected workflows against the separately constructed 34-theme inventory
+(Table 6); these are not independent raw-data reproductions.
+Panel B: full-workflow GT-only (85.0 h) and hybrid (110.5 h), +25.5 h (+30%).
+Panel C: seven GT-containing category depth scores (Table C5).
+No synthetic empirical execution or candidate-level records are generated.
 """
 
 from __future__ import annotations
@@ -19,116 +18,73 @@ import numpy as np
 import pandas as pd
 
 
-PERFORMANCE_ORDER = [
-    "GT-only",
-    "Semantic map only",
-    "Semantic map + LLM",
-    "Full hybrid",
-]
-
-TIME_ORDER = [
-    "GT-only",
-    "Semantic map only",
-    "Semantic map + LLM",
-    "Post-GT hybrid integration and adjudication",
-]
-
-TIME_LABELS = {
-    "GT-only": "GT-only\n(complete workflow)",
-    "Semantic map only": "Semantic map\n(mapping stage)",
-    "Semantic map + LLM": "Map + LLM\n(mapping + interpretation)",
-    "Post-GT hybrid integration and adjudication": "Post-GT integration\n(additional stage)",
-}
+PERFORMANCE_ORDER = ["GT-only", "Pure automated LLM", "Naïve sequential", "Full hybrid governance"]
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--metrics", default="data/derived/workflow_metrics.csv")
+    parser.add_argument("--metrics", default="data/derived/independent_34_theme_metrics_reported.csv")
+    parser.add_argument("--workflow-metrics", default="data/derived/workflow_metrics.csv")
     parser.add_argument("--depth", default="data/derived/interpretive_depth.csv")
     parser.add_argument("--output", default="outputs/figure4_role_aligned.png")
     args = parser.parse_args()
 
-    raw_metrics = pd.read_csv(args.metrics)
-    performance = (
-        raw_metrics.set_index("workflow")
-        .loc[PERFORMANCE_ORDER]
-        .reset_index()
-    )
-    time_data = (
-        raw_metrics.set_index("workflow")
-        .loc[TIME_ORDER]
-        .reset_index()
-    )
+    performance = pd.read_csv(args.metrics).set_index("workflow").loc[PERFORMANCE_ORDER].reset_index()
+    effort = pd.read_csv(args.workflow_metrics).set_index("workflow")
     depth = pd.read_csv(args.depth)
+    if not (performance["reference_total"] == 34).all():
+        raise ValueError("Panel A must use the separate independent 34-theme reference")
+    full_gt = float(effort.loc["GT-only", "recorded_person_hours"])
+    full_hybrid = float(effort.loc["Full hybrid", "recorded_person_hours"])
+    if not (np.isclose(full_gt, 85.0) and np.isclose(full_hybrid, 110.5)):
+        raise ValueError("Panel B requires complete-workflow endpoints 85.0 and 110.5 h")
 
-    plt.rcParams.update(
-        {
-            "font.family": "Times New Roman",
-            "font.size": 9,
-            "axes.titlesize": 11,
-            "axes.labelsize": 9,
-        }
-    )
-
-    fig = plt.figure(figsize=(13, 9))
-    gs = fig.add_gridspec(2, 2, height_ratios=[1, 1.25], hspace=0.42, wspace=0.30)
+    plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 9})
+    fig = plt.figure(figsize=(14, 9))
+    gs = fig.add_gridspec(2, 2, height_ratios=[1.05, 1.25], hspace=0.46, wspace=0.42)
     ax_a = fig.add_subplot(gs[0, 0])
     ax_b = fig.add_subplot(gs[0, 1])
     ax_c = fig.add_subplot(gs[1, :])
 
-    # Panel A: shared reference-theme performance against the frozen 32-theme inventory.
+    # Panel A: independent 34-theme comparison, matching Fig. 4A's selected workflows.
     y = np.arange(len(performance))[::-1]
-    offsets = {"coverage": 0.16, "precision": 0.0, "f1": -0.16}
-    markers = {"coverage": "o", "precision": "s", "f1": "D"}
-    labels = {"coverage": "Coverage", "precision": "Precision", "f1": "F1"}
-
-    for metric in ["coverage", "precision", "f1"]:
-        yy = y + offsets[metric]
-        values = performance[metric].astype(float).to_numpy()
-        ax_a.hlines(yy, 60, values, linewidth=1.0, alpha=0.55)
-        ax_a.scatter(values, yy, marker=markers[metric], s=34, label=labels[metric], zorder=3)
-        for x, y_i in zip(values, yy):
-            ax_a.text(x + 0.8, y_i, f"{x:.1f}%", va="center", fontsize=8)
-
+    offsets = {"coverage": 0.17, "reference_precision": 0.0, "f1": -0.17}
+    markers = {"coverage": "o", "reference_precision": "s", "f1": "D"}
+    labels = {"coverage": "Coverage", "reference_precision": "Ref. precision", "f1": "F1"}
+    for field in ("coverage", "reference_precision", "f1"):
+        yy = y + offsets[field]
+        values = performance[field].astype(float).to_numpy()
+        ax_a.hlines(yy, 60, values, lw=1, alpha=0.4)
+        ax_a.scatter(values, yy, marker=markers[field], s=35, label=labels[field], zorder=3)
+        for v, yi in zip(values, yy):
+            ax_a.text(v + 0.5, yi, f"{v:.1f}%", fontsize=7, va="center")
     ax_a.set_yticks(y)
-    ax_a.set_yticklabels(performance["workflow"])
-    ax_a.set_xlim(60, 100)
+    ax_a.set_yticklabels(["GT-only", "Pure automated LLM", "Naïve sequential", "Full hybrid governance"])
+    ax_a.set_xlim(58, 104)
     ax_a.set_xticks([60, 70, 80, 90, 100])
-    ax_a.set_xticklabels(["60%", "70%", "80%", "90%", "100%"])
     ax_a.set_xlabel("Performance (%)")
-    ax_a.set_title("A   Shared reference-theme performance", loc="left", fontweight="bold")
-    ax_a.text(
-        0.0,
-        1.02,
-        "Frozen 32-theme reference inventory",
-        transform=ax_a.transAxes,
-        fontsize=8,
-    )
-    ax_a.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.52, 1.16))
+    ax_a.set_title("A   Independent reference performance", loc="left", fontweight="bold")
+    ax_a.text(0, 1.02, "Independent 34-theme inventory (reported aggregates)",
+              transform=ax_a.transAxes, fontsize=8)
+    ax_a.legend(frameon=False, ncol=3, loc="upper center", bbox_to_anchor=(0.52, 1.15))
     ax_a.grid(axis="x", alpha=0.2)
 
-    # Panel B: stage-specific analyst time. Endpoints are deliberately not normalized.
-    y_b = np.arange(len(time_data))[::-1]
-    times = pd.to_numeric(time_data["recorded_person_hours"], errors="coerce").to_numpy()
-    if np.isnan(times).any():
-        raise ValueError("Panel B requires a recorded_person_hours value for each stage in TIME_ORDER")
-
-    ax_b.barh(y_b, times)
+    # Panel B: compare the two complete workflows, not nested stage endpoints.
+    labels_b = ["GT-only\\ncomplete workflow", "Full hybrid\\ncomplete workflow"]
+    values_b = [full_gt, full_hybrid]
+    y_b = [1, 0]
+    ax_b.barh(y_b, values_b)
     ax_b.set_yticks(y_b)
-    ax_b.set_yticklabels([TIME_LABELS[x] for x in time_data["workflow"]])
-    ax_b.set_xlim(0, 90)
-    ax_b.set_xticks([0, 15, 30, 45, 60, 75, 90])
-    ax_b.set_xlabel("Recorded person-hours")
-    ax_b.set_title("B   Recorded activity time", loc="left", fontweight="bold")
-    ax_b.text(
-        0.0,
-        1.02,
-        "Non-equivalent endpoints; descriptive stage planning only",
-        transform=ax_b.transAxes,
-        fontsize=8,
-    )
-    for x, y_i in zip(times, y_b):
-        ax_b.text(x + 1.2, y_i, f"{x:.1f} h", va="center", fontsize=8)
+    ax_b.set_yticklabels([s.replace("\\\\n", "\\n") for s in labels_b])
+    ax_b.set_xlim(0, 132)
+    ax_b.set_xlabel("Recorded analyst effort (person-hours)")
+    ax_b.set_title("B   Recorded analyst effort", loc="left", fontweight="bold")
+    ax_b.text(0, 1.02, "Comparable complete-workflow endpoints",
+              transform=ax_b.transAxes, fontsize=8)
+    for value, yi in zip(values_b, y_b):
+        ax_b.text(value + 1.5, yi, f"{value:.1f} h", fontsize=9, va="center")
+    ax_b.text(0.02, 0.04, "+25.5 h (+30.0%) vs GT-only; 85.0 + 3.5 + 22.0 = 110.5 h",
+              transform=ax_b.transAxes, fontsize=8)
     ax_b.grid(axis="x", alpha=0.2)
 
     # Panel C: interpretive depth only for GT-containing workflows.
@@ -198,20 +154,17 @@ def main() -> None:
     ax_c.legend(frameon=False, ncol=2, loc="upper center", bbox_to_anchor=(0.50, 1.13))
     ax_c.grid(axis="x", alpha=0.15)
 
-    for ax in [ax_a, ax_b, ax_c]:
+    for ax in (ax_a, ax_b, ax_c):
         ax.spines["top"].set_visible(False)
         ax.spines["right"].set_visible(False)
         ax.spines["left"].set_alpha(0.25)
         ax.spines["bottom"].set_alpha(0.25)
 
     fig.suptitle(
-        "Fig. 4. Role-aligned component comparison. Panel A uses the frozen 32-theme reference inventory; "
-        "Panel B reports non-equivalent activity endpoints without a percentage labor-reduction claim; "
-        "Panel C compares interpretive depth only for GT-containing workflows.",
-        y=0.02,
-        fontsize=9,
+        "Fig. 4. Reported independent 34-theme metrics, complete-workflow effort and GT-category depth. "
+        "This is a redraw of manuscript tables, not an independent reconstruction of raw records.",
+        y=0.015, fontsize=9,
     )
-
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(output, dpi=300, bbox_inches="tight")

@@ -21,7 +21,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 FINAL_TITLE = (
     "Human-in-the-Loop Knowledge Organization for Interdisciplinary Synthesis: "
-    "Semantic Mapping, LLM-Assisted Interpretation, and Grounded Theory"
+    "Semantic Mapping, LLM-Assisted Interpretation, and Grounded-Theory-Informed Reconstruction"
 )
 EXPECTED_JSON_KEYS = [
     "provisional_label",
@@ -65,10 +65,15 @@ def validate_workflow_metrics() -> None:
         require(close(row["precision"], precision), f"{workflow}: precision mismatch")
         require(close(row["f1"], f1), f"{workflow}: F1 mismatch")
 
-    require(pd.isna(df.loc["Full hybrid", "recorded_person_hours"]),
-            "Full hybrid must not carry a standalone person-time total")
-    require(str(df.loc["Full hybrid", "time_endpoint"]) == "Standalone total not reported",
-            "Full hybrid time endpoint boundary mismatch")
+    require(close(df.loc["Full hybrid", "recorded_person_hours"], 110.5),
+            "Complete full-hybrid person-time must be 110.5 h")
+    require("complete" in str(df.loc["Full hybrid", "time_endpoint"]).lower(),
+            "Full-hybrid 110.5 h must be labeled as a complete workflow")
+    require(close(df.loc["Full hybrid", "recorded_person_hours"]
+                  - df.loc["GT-only", "recorded_person_hours"], 25.5),
+            "Complete-workflow difference must be +25.5 h")
+    require(close(85.0 + 3.5 + 22.0, 110.5),
+            "Full-hybrid components do not sum to 110.5 h")
     require(close(df.loc["GT-only", "recorded_person_hours"], 85.0), "GT-only time mismatch")
     require(close(df.loc["Semantic map only", "recorded_person_hours"], 2.6), "Mapping-stage time mismatch")
     require(close(df.loc["Semantic map + LLM", "recorded_person_hours"], 3.5), "Map+LLM time mismatch")
@@ -78,6 +83,60 @@ def validate_workflow_metrics() -> None:
     require(close(df.loc[post, "recorded_person_hours"], 22.0), "Post-GT additional time mismatch")
     require(str(df.loc[post, "time_endpoint"]) == "Additional after frozen corpus-level GT reconstruction",
             "Post-GT endpoint boundary mismatch")
+
+
+
+def validate_independent_aggregates() -> None:
+    """Arithmetic checks for Table 6/C14a summaries, not evidence provenance."""
+    df = pd.read_csv(ROOT / "data/derived/independent_34_theme_metrics_reported.csv")
+    expected = {
+        "GT-only": (24, 27, 1, 2),
+        "Semantic map only": (26, 32, 3, 3),
+        "Map + LLM labeling": (29, 34, 3, 2),
+        "Pure automated LLM": (28, 37, 4, 5),
+        "Naïve sequential": (29, 34, 3, 2),
+        "Full hybrid governance": (31, 33, 1, 1),
+    }
+    require(len(df) == 6 and set(df["workflow"]) == set(expected),
+            "Independent 34-theme comparison must contain six named workflows")
+    df = df.set_index("workflow")
+    for workflow, (recovered, candidates, novel, other) in expected.items():
+        row = df.loc[workflow]
+        require(int(row["reference_total"]) == 34, f"{workflow}: independent denominator mismatch")
+        require(int(row["recovered"]) == recovered, f"{workflow}: recovered mismatch")
+        require(int(row["candidates"]) == candidates, f"{workflow}: candidate count mismatch")
+        require(int(row["supported_inventory_external"]) == novel
+                and int(row["other_candidates"]) == other, f"{workflow}: classification mismatch")
+        require(recovered + novel + other == candidates, f"{workflow}: candidate partition mismatch")
+        coverage = 100.0 * recovered / 34
+        precision = 100.0 * recovered / candidates
+        f1 = 2.0 * coverage * precision / (coverage + precision)
+        yield_pct = 100.0 * (recovered + novel) / candidates
+        for field, expected_pct in [
+            ("coverage", coverage), ("reference_precision", precision),
+            ("f1", f1), ("verified_candidate_yield", yield_pct),
+        ]:
+            require(close(row[field], expected_pct, tol=0.06),
+                    f"{workflow}: {field} does not round to manuscript value")
+    for field, total in [
+        ("candidates", 197), ("recovered", 167),
+        ("supported_inventory_external", 15), ("other_candidates", 15),
+    ]:
+        require(int(df[field].sum()) == total, f"Independent aggregate {field} mismatch")
+
+    cells = pd.read_csv(ROOT / "data/derived/independent_matching_agreement_reported.csv")
+    c = {(int(r.assessor_1_match), int(r.assessor_2_match)): int(r.n)
+         for r in cells.itertuples(index=False)}
+    require(c == {(1, 1): 164, (1, 0): 4, (0, 1): 5, (0, 0): 24},
+            "Initial binary matching 2x2 cells differ from Table C14a")
+    n = sum(c.values())
+    observed = (c[1, 1] + c[0, 0]) / n
+    expected_chance = ((c[1, 1] + c[1, 0]) * (c[1, 1] + c[0, 1])
+                       + (c[0, 1] + c[0, 0]) * (c[1, 0] + c[0, 0])) / (n * n)
+    kappa = (observed - expected_chance) / (1 - expected_chance)
+    require(n == 197 and close(observed * 100, 95.4, tol=0.06),
+            "Independent first-pass agreement mismatch")
+    require(close(kappa, 0.82, tol=0.005), "Independent binary Cohen kappa mismatch")
 
 
 def validate_reference_crosswalk() -> None:
@@ -214,7 +273,8 @@ def validate_mechanism_and_gap_audit() -> None:
 def validate_config() -> None:
     cfg = yaml.safe_load((ROOT / "config/paper_config.yaml").read_text(encoding="utf-8"))
     require(cfg["manuscript"]["title"] == FINAL_TITLE, "Manuscript title mismatch")
-    require(cfg["manuscript"]["previous_reference"] == "IPM-D-26-03845", "Previous reference mismatch")
+    require(cfg["manuscript"]["current_manuscript_number"] == "IPM-D-26-05980", "Current manuscript ID mismatch")
+    require(cfg["manuscript"]["previous_reference"] == "IPM-D-26-03845", "Historical legacy ID mismatch")
     require(cfg["manuscript"]["journal"] == "Information Processing & Management", "Journal metadata mismatch")
 
     embedding = cfg["embedding"]
@@ -251,7 +311,12 @@ def validate_config() -> None:
     env = cfg["measured_environment"]
     require(env["operating_system"] == "Ubuntu 22.04 LTS", "OS metadata mismatch")
     require(env["cpu"] == "AMD Ryzen 9 7950X" and int(env["system_ram_gb"]) == 64, "CPU/RAM metadata mismatch")
-    require(env["gpu"] == "NVIDIA GeForce RTX 4090" and int(env["vram_gb"]) == 24, "GPU/VRAM metadata mismatch")
+    require(env["gpu"] == "NVIDIA RTX A5000" and int(env["gpu_count"]) == 2,
+            "Table B2 reported GPU model/count mismatch")
+    require(int(env["vram_per_gpu_gb"]) == 24 and int(env["aggregate_physical_vram_gb"]) == 48,
+            "Table B2 reported VRAM mismatch")
+    require("not available" in env["hardware_evidence_status"].lower(),
+            "Hardware provenance limitations must remain explicit")
     require(str(env["python"]) == "3.11.9" and str(env["cuda"]) == "12.1", "Python/CUDA metadata mismatch")
     require(str(env["pytorch"]) == "2.3.1+cu121", "PyTorch metadata mismatch")
     require(str(env["sentence_transformers"]) == "3.0.1", "sentence-transformers metadata mismatch")
@@ -261,7 +326,10 @@ def validate_config() -> None:
 
     evaluation = cfg["evaluation"]
     expected = {
-        "reference_theme_count": 32, "blind_subset_size": 103,
+        "reference_theme_count": 32, "independent_reference_theme_count": 34,
+        "independent_candidate_judgments": 197, "independent_initial_agreements": 188,
+        "independent_disputes": 9, "independent_automated_candidates": 37,
+        "blind_subset_size": 103,
         "academic_record_count": 412, "external_record_count": 34500,
         "academic_clusters": 12, "academic_outliers": 33, "public_topic_families": 8,
     }
@@ -294,6 +362,7 @@ def validate_forbidden_legacy_claims() -> None:
 def main() -> None:
     validate_workflow_metrics()
     validate_reference_crosswalk()
+    validate_independent_aggregates()
     validate_stability()
     validate_reliability_and_depth()
     validate_runtime()
@@ -302,7 +371,7 @@ def main() -> None:
     validate_config()
     validate_repository_shape()
     validate_forbidden_legacy_claims()
-    print("PASS: public companion aggregate values, repository shape, configuration, literal prompts, and claim boundaries match the final manuscript constants checked here.")
+    print("PASS: manuscript-reported 32/34-theme aggregate metrics, person-hours, metadata, and declared scope match the checked constants.")
     print("Boundary: this check does not validate restricted raw data, expert judgments, or empirical provenance.")
 
 

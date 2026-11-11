@@ -1,6 +1,7 @@
 manuscript:
-  title: "Human-in-the-Loop Knowledge Organization for Interdisciplinary Synthesis: Semantic Mapping, LLM-Assisted Interpretation, and Grounded Theory"
-  previous_reference: IPM-D-26-03845
+  title: "Human-in-the-Loop Knowledge Organization for Interdisciplinary Synthesis: Semantic Mapping, LLM-Assisted Interpretation, and Grounded-Theory-Informed Reconstruction"
+  current_manuscript_number: IPM-D-26-05980
+  previous_reference: IPM-D-26-03845  # Legacy repository identifier; verify its origin before citing
   journal: "Information Processing & Management"
 
 seed: 42
@@ -60,8 +61,11 @@ measured_environment:
   operating_system: Ubuntu 22.04 LTS
   cpu: AMD Ryzen 9 7950X
   system_ram_gb: 64
-  gpu: NVIDIA GeForce RTX 4090
-  vram_gb: 24
+  gpu: NVIDIA RTX A5000
+  gpu_count: 2
+  vram_per_gpu_gb: 24
+  aggregate_physical_vram_gb: 48
+  hardware_evidence_status: Manuscript Table B2 report only; raw hardware logs are not available in this public repository
   python: 3.11.9
   cuda: 12.1
   pytorch: 2.3.1+cu121
@@ -71,7 +75,13 @@ measured_environment:
   scikit_learn: 1.5.1
 
 evaluation:
-  reference_theme_count: 32
+  reference_theme_count: 32  # Original within-study evaluation; retained for backward compatibility
+  independent_reference_theme_count: 34  # Separate blinded-reference aggregate evaluation
+  independent_candidate_judgments: 197
+  independent_initial_agreements: 188
+  independent_disputes: 9
+  independent_automated_candidates: 37
+  evidence_status: Aggregate figures transcribed from manuscript; no candidate-level raw records bundled
   blind_subset_size: 103
   academic_record_count: 412
   external_record_count: 34500

@@ -1,0 +1,7 @@
+workflow,recovered,reference_total,candidates,coverage,reference_precision,f1,supported_inventory_external,other_candidates,verified_candidate_yield
+GT-only,24,34,27,70.6,88.9,78.7,1,2,92.6
+Semantic map only,26,34,32,76.5,81.3,78.8,3,3,90.6
+Map + LLM labeling,29,34,34,85.3,85.3,85.3,3,2,94.1
+Pure automated LLM,28,34,37,82.4,75.7,78.9,4,5,86.5
+Naïve sequential,29,34,34,85.3,85.3,85.3,3,2,94.1
+Full hybrid governance,31,34,33,91.2,93.9,92.5,1,1,97.0
