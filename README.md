@@ -2,7 +2,7 @@
 
 ![Manuscript alignment](https://github.com/wzy7421/LLM-GT/actions/workflows/manuscript-alignment.yml/badge.svg)
 
-Reproducibility companion for the manuscript **“Human-in-the-Loop Knowledge Organization for Interdisciplinary Synthesis: Semantic Mapping, LLM-Assisted Interpretation, and Grounded Theory.”**
+Reproducibility companion for the manuscript **“Human-in-the-Loop Knowledge Organization for Interdisciplinary Synthesis: Semantic Mapping, LLM-Assisted Interpretation, and Grounded-Theory-Informed Reconstruction.”**
 
 ## Purpose
 
@@ -32,7 +32,7 @@ The repository mirrors the paper’s asymmetric human–AI knowledge-organizatio
 
 ## Manuscript-aligned configuration
 
-The repository intentionally contains **one manuscript configuration file**, `config/paper_config.yaml`, matching the configuration-file scope described in the response letter. It records the principal settings reported in the manuscript:
+The repository intentionally contains **one manuscript configuration file**, `config/paper_config.yaml`. It now identifies the current manuscript as **IPM-D-26-05980**; the older `previous_reference` field is retained as historical repository metadata and must not be mistaken for the submission number. It records the principal settings reported in the manuscript:
 
 - primary embedding model: `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`
 - sensitivity embedding model: `sentence-transformers/all-mpnet-base-v2`
@@ -51,7 +51,7 @@ The repository intentionally contains **one manuscript configuration file**, `co
 
 The reported stochastic-sensitivity analysis used **20 fixed evidence units × 10 decoding seeds = 200 outputs**, with model snapshot, prompt text, input evidence, temperature, top-p, and maximum-output settings held fixed while only the decoding seed varied.
 
-The measured environment reported in the manuscript used Ubuntu 22.04 LTS, Python 3.11.9, CUDA 12.1, an AMD Ryzen 9 7950X with 64 GB RAM, and an NVIDIA GeForce RTX A5000 with 24 GB VRAM. The public companion records the principal software versions in `config/paper_config.yaml` and `requirements.txt`; exact wall times remain hardware- and access-dependent.
+Manuscript Table B2 reports Ubuntu 22.04 LTS, Python 3.11.9, CUDA 12.1, AMD Ryzen 9 7950X, 64 GB RAM, and **2 × NVIDIA RTX A5000 GPUs (24 GB physical VRAM each; 48 GB aggregate)**. This repository mirrors those manuscript-reported settings in `config/paper_config.yaml`; the public repository does **not** include hardware provenance logs independently confirming the run environment. Exact wall times remain hardware- and access-dependent.
 
 ## External acquisition audit artifact
 
@@ -130,9 +130,10 @@ python src/validate_manuscript_alignment.py
 
 The validator checks the public constants and claim boundaries mirrored from the final manuscript, including:
 
-- the frozen 32-theme denominator and T01–T32 hit/miss crosswalk;
+- the original within-study 32-theme denominator and T01–T32 hit/miss crosswalk;
+- the **separate 34-theme independent-reference aggregate metrics** and 197-candidate binary agreement table;
 - workflow coverage/precision/F1 values;
-- non-equivalent person-time endpoints and the absence of a percentage labor-reduction claim;
+- full-workflow 110.5 versus 85.0 person-hours, +25.5 h (+30.0%), and distinct stage endpoints;
 - category-level reliability, 2 × 2 coder cells, and interpretive-depth values;
 - the 20-unit × 10-seed LLM stability summary;
 - three-run runtime aggregates;
@@ -217,19 +218,19 @@ The checker implements two recorded layers:
 
 The checker does not create propositions, judge novelty, or replace expert assessment.
 
-### 5. Regenerate the role-aligned Fig. 4 from reported aggregate values
+### 5. Regenerate Fig. 4 from manuscript-reported aggregates
 
 ```bash
 python src/plot_figure4.py --output outputs/figure4_role_aligned.png
 ```
 
-The script mirrors the final manuscript’s comparison logic:
+This generates a **reproducible aggregate-data illustration** matching the numerical scope of the revised Fig. 4, not the exact original graphical artwork or its underlying empirical computations:
 
-- **Panel A:** coverage, precision, and F1 against the same frozen 32-theme reference inventory;
-- **Panel B:** stage-specific recorded person-time with explicitly non-equivalent endpoints;
-- **Panel C:** interpretive depth only for GT-containing workflows.
+- **Panel A:** coverage, reference precision and F1 for the GT-only, pure automated LLM, naïve sequential, and full hybrid workflows against the **independent 34-theme** reference (Table 6).
+- **Panel B:** **complete workflows only**: GT-only 85.0 h and full hybrid 110.5 h, or **+25.5 h (+30.0%)** additional analyst effort. The 2.6 h mapping-only stage is included in the 3.5 h mapping/LLM stage and is never added twice.
+- **Panel C:** seven-category interpretive depth for the GT-containing workflows (Table C5).
 
-The repository does **not** estimate a percentage labor reduction. In the manuscript, `85.0 h` is the complete GT-only workflow, `2.6 h` is the semantic-mapping stage, `3.5 h` is the mapping-plus-provisional-interpretation stage, and `22.0 h` is additional post-GT integration and adjudication after the corpus-level GT reconstruction was frozen. A standalone total for the full-hybrid workflow is **not reported**.
+The original 32-theme results remain available separately in `data/derived/workflow_metrics.csv` and must not be substituted for Panel A's 34-theme metrics. The six-condition aggregates and binary agreement counts are **transcriptions of manuscript tables**, not independent verification of model outputs, candidate matching, or experimental provenance.
 
 ## Reviewer-facing audit map
 
@@ -237,7 +238,8 @@ The repository does **not** estimate a percentage labor reduction. In the manusc
 |---|---|
 | Distinguish clustering from LLM interpretation | `src/semantic_mapping.py`, `src/llm_interpretation.py`, literal prompts |
 | BERTopic-family computational scaffold; no algorithmic novelty claim | `src/semantic_mapping.py`, `config/paper_config.yaml` |
-| Frozen 32-theme coverage denominator | `data/derived/reference_theme_crosswalk_reported.csv` |
+| Original 32-theme within-study denominator | `data/derived/reference_theme_crosswalk_reported.csv`, `data/derived/workflow_metrics.csv` |
+| Separate 34-theme blinded-reference reported aggregates | `data/derived/independent_34_theme_metrics_reported.csv`, `data/derived/independent_matching_agreement_reported.csv` |
 | Role-aligned workflow evaluation | `data/derived/workflow_metrics.csv`, `src/plot_figure4.py` |
 | Category-level reliability and depth | `coding_reliability_reported.csv`, `coder_2x2_reported.csv`, `interpretive_depth.csv` |
 | LLM stochastic sensitivity | `llm_stability_reported.csv`, `src/stability.py` |
@@ -252,19 +254,21 @@ The repository does **not** estimate a percentage labor reduction. In the manusc
 ## Data and claim boundaries
 
 - `data/demo/*` contains **synthetic schema examples only**.
-- `data/derived/*` contains aggregate or audit-level values already reported in the manuscript.
+- `data/derived/*` contains manuscript-reported aggregate/audit-level values, **not the raw historical execution/assessor logs**. The independent 34-theme files carry no candidate-level evidence or proof of blinded execution.
 - No licensed bibliographic record, username, profile information, direct identifier, or verbatim public post is included.
 - The repository does not reproduce the empirical corpora from public data alone and does not claim exact-corpus reproducibility where source archives or licensed manifests are inaccessible.
 - Computational clusters and provisional LLM labels are not findings.
 - The repository does not convert sparse topics into research-gap claims automatically.
 - External issue-public results are case-bounded and are not representative estimates of population opinion.
 - Repeated-output similarity measures local stability under the fixed reported configuration; it does not establish truth, construct validity, or cross-model stability.
-- Recorded person-time values have non-equivalent activity endpoints and are not evidence of a percentage labor reduction.
+- Complete-workflow analyst effort is 110.5 h (full hybrid) versus 85.0 h (GT-only), **+25.5 h (+30.0%)**. Partial stage timings have different endpoints and are not comparable full-workflow totals.
 - The 103-record mechanism comparison uses frozen artifacts and a subset-specific 24-theme denominator; it is reported as mechanism-consistent evidence, not as a new randomized experiment.
 
 ## Reproducibility scope
 
-The companion supports **protocol-level and code-path reproducibility** while respecting database licensing, platform terms, privacy constraints, and data minimization. Researchers with access to their own lawful source corpus can replace the synthetic demo files using the documented schemas and rerun the computational and audit logic. Empirical claims in the manuscript remain tied to the reported 412-publication scholarly corpus, the documented expert/coder procedures, and the case-bounded external corpus used in the study.
+The companion supports **protocol-level and code-path reproducibility**, plus arithmetic checking of manuscript-reported aggregates. It does not verify the 34 reference-theme definitions, 197 raw assessor judgments, nine dispute decisions, or the pure LLM baseline's 17 batch request/response records. The pure LLM input was metadata-only; the hybrid interpretive branch also used full texts. This is not a controlled causal estimate of human necessity. The repository's mapping demonstration implements the BERTopic-family pipeline components directly; it does not reproduce the manuscript's claimed BERTopic library run without additional execution records.
+
+The companion operates while respecting database licensing, platform terms, privacy constraints, and data minimization. Researchers with access to their own lawful source corpus can replace the synthetic demo files using the documented schemas and rerun the computational and audit logic. Empirical claims in the manuscript remain tied to the reported 412-publication scholarly corpus, the documented expert/coder procedures, and the case-bounded external corpus used in the study.
 
 ## License
 
