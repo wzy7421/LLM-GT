@@ -16,7 +16,9 @@ These demo files are intentionally small and synthetic. They are **not expected 
 
 Files in `data/derived/` contain **aggregate or audit-level values already reported in the manuscript**, not restricted raw source data.
 
-- `workflow_metrics.csv` — role-aligned workflow results against the frozen 32-theme reference inventory. The full-hybrid row contains no standalone person-time total; the separate post-GT integration/adjudication row records the additional 22.0 h stage after corpus-level GT reconstruction was frozen.
+- `workflow_metrics.csv` — original within-study 32-theme results (Table 9) including the manuscript-reported **110.5 person-hour complete hybrid workflow** (85.0 GT + 3.5 mapping/LLM + 22.0 integration); the 2.6 h mapping-only stage is nested in the 3.5 h stage and must not be added again.
+- `independent_34_theme_metrics_reported.csv` — **Table 6 aggregate values only** for six conditions against the separately constructed 34-theme reference; this is not a release of the 34 reference definitions or 197 candidate-level records.
+- `independent_matching_agreement_reported.csv` — the **Table C14a 2×2 aggregate binary agreement counts** (164/4/5/24). These can reproduce κ≈0.82 but do not validate exact theme-ID agreement or independent blindness.
 - `reference_theme_crosswalk_reported.csv` — complete T01–T32 frozen reference-theme hit/miss crosswalk used to make the 30/32 full-hybrid coverage denominator auditable.
 - `interpretive_depth.csv` — seven-category GT-only versus full-hybrid depth profile.
 - `coding_reliability_reported.csv` — category-level raw agreement, one-vs-rest Cohen's kappa, 95% CI, and depth results.
@@ -30,7 +32,7 @@ Files in `data/derived/` contain **aggregate or audit-level values already repor
 - `gap_decisions_reported.csv` — 12 screened scholarly-workflow propositions and their final 8 eligible / 4 rejected decisions.
 - `adjudication_outcomes_reported.csv` — 20-unit human adjudication outcome counts.
 
-The person-time quantities in `workflow_metrics.csv` have **non-equivalent endpoints** and must not be used to calculate a percentage labor reduction.
+The complete hybrid (110.5 h) and GT-only (85.0 h) have comparable full-workflow endpoints; the manuscript reports **+25.5 h (+30.0%)** additional analyst effort, not a labor reduction. Mapping-only (2.6 h), combined mapping/LLM (3.5 h), and post-GT integration (22.0 h) are **stage-level** quantities; 2.6 h is included within 3.5 h, and stage endpoints must not be confused with complete workflows.
 
 ## Configuration versus audit artifacts
 
@@ -41,3 +43,9 @@ The repository intentionally contains **one runtime/manuscript configuration fil
 Raw academic metadata and raw user-generated issue-public records are not redistributed because the manuscript describes database licensing, platform terms, privacy constraints, and data-minimization requirements. The public repository therefore focuses on computational configuration, literal prompt structure, audit schemas, manuscript-reported aggregate values, and executable demonstration code.
 
 The repository supports protocol-level and code-path reproducibility. It does **not** claim exact reconstruction of restricted corpora where the underlying licensed archives or source manifests are not independently accessible. The aggregate files mirror values disclosed in the manuscript; they do not independently validate the underlying empirical source records, expert judgments, or provenance.
+
+## Independent 34-theme evaluation: release status
+
+The manuscript reports six-condition aggregate reference recovery against a separate 34-theme inventory and initial binary agreement for 197 candidate evaluations. The two new `*_reported.csv` files **mirror only published table aggregates** and allow arithmetic validation. They do **not** contain the 34 item definitions, the 197 first-pass candidate-level judgments, nine dispute-resolution cases, original LLM responses, or operator execution logs. These empirical materials must be located and reviewed before any claim of independently reproduced matching or model execution. Do not regenerate historical execution logs or assessor decisions from aggregate counts. Where materials are legitimately unavailable, state the limitation explicitly.
+
+The academic metadata and full-text evidence used by the hybrid workflow are not identical inputs. The pure automated LLM comparator used titles, abstracts and keywords, whereas grounded-theory-informed coding also used full text. The aggregate comparison alone does not isolate a causal effect of human involvement.
